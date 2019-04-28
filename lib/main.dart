@@ -104,6 +104,12 @@ class HostProblemListView extends StatefulWidget {
 class HostProblemListViewState extends State<HostProblemListView> {
   HostController controller = getIt.get<HostController>();
 
+  Future<void> _refresh() async {
+    print('refreshing...');
+    await controller.fetchHost();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Collection<Host>>(
@@ -123,29 +129,47 @@ class HostProblemListViewState extends State<HostProblemListView> {
               ],
             );
           }
-          return ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, index) {
-              return new Container(
-                decoration: new BoxDecoration(
-                  color: snapshot.data[index].getBackgroundColor(),
-                ),
-                child: new ListTile(
-                  title: Text("${snapshot.data[index].getName()}"),
-                  subtitle: Text(snapshot.data[index].getData("host_output")),
-                  leading: snapshot.data[index].getIcon(),
-                  onTap: () {
-                    print("onTap ${snapshot.data[index].name}");
-                  },
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return new Container(
+                  decoration: new BoxDecoration(
+                    color: snapshot.data[index].getBackgroundColor(),
+                  ),
+                  child: new ListTile(
+                    title: Text("${snapshot.data[index].getName()}"),
+                    subtitle: Text(snapshot.data[index].getData("host_output")),
+                    leading: snapshot.data[index].getIcon(),
+                    onTap: () {
+                      print("onTap ${snapshot.data[index].name}");
+                    },
+                  ),
+                );
+              },
+            ),
           );
         } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Icon(
+                Icons.error,
+                color: Colors.red,
+                size: 50,
+              ),
+              Text("${snapshot.error}"),
+            ],
+          );
         }
 
-        return CircularProgressIndicator();
+        return new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+          ],
+        );
       },
     );
   }

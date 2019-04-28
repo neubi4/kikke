@@ -14,6 +14,8 @@ class HostController {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
+    print("loading hosts");
+
     final response = await http.get('https://www.icinga.com/demo/monitoring/list/hosts?format=json', headers: headers);
 
     if (response.statusCode == 200) {
@@ -28,7 +30,7 @@ class HostController {
       });
     } else {
       // If that call was not successful, throw an error.
-      throw Exception('Failed to load host, code ${response.statusCode}');
+      throw Exception('Failed to load host, ${response.request.method} ${response.request.url} ${response.statusCode} ${response.body}');
     }
   }
 
