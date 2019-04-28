@@ -106,14 +106,14 @@ class HostProblemListViewState extends State<HostProblemListView> {
 
   Future<void> _refresh() async {
     print('refreshing...');
-    await controller.fetchHost();
+    await controller.fetchHosts();
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Collection<Host>>(
-      future: controller.getHosts(),
+      future: controller.getProblemHosts(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {

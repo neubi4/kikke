@@ -15,6 +15,6 @@ class Service {
   }
 
   void update(Map<String, dynamic> json) {
-    this.data = json;
+    this.data.addAll(json);
   }
 }

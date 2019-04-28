@@ -17,7 +17,7 @@ class Host implements Comparable<Host> {
 
   void update(Map<String, dynamic> json) {
     this.name = json['host_name'];
-    this.data = json;
+    this.data.addAll(json);
   }
 
   String getName() {
