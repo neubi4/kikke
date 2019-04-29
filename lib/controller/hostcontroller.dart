@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mobilemon/controller/appsettings.dart';
+import 'package:mobilemon/controller/servicecontroller.dart';
 
 import 'package:mobilemon/models/host.dart';
 import 'package:queries/collections.dart';
@@ -10,15 +12,22 @@ class HostController {
   bool fetchedAllHosts = false;
   DateTime lastUpdate = new DateTime(1970);
 
+  AppSettings appSettings;
+  ServiceController serviceController;
+
+  HostController({this.appSettings, this.serviceController});
+
   Future fetchHosts() async {
     final headers = Map<String, String>();
-    final auth = base64Encode(utf8.encode("demo:demo"));
+    final auth = await this.appSettings.getAuthData();
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    print("loading hosts");
+    print("fetching hosts");
 
-    final response = await http.get('https://www.icinga.com/demo/monitoring/list/hosts?limit=10000&format=json', headers: headers);
+    String icingaUrl = await this.appSettings.getIcingaUrl();
+
+    final response = await http.get('${icingaUrl}monitoring/list/hosts?limit=10000&format=json', headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -27,12 +36,38 @@ class HostController {
         if (this.hosts.containsKey(item['host_name'])) {
           this.hosts[item['host_name']].update(item);
         } else {
-          this.hosts[item['host_name']] = Host.fromJson(item);
+          this.hosts[item['host_name']] = Host.fromJson(item, this);
         }
 
         this.fetchedAllHosts = true;
         this.lastUpdate = DateTime.now();
       });
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load host, ${response.request.method} ${response.request.url} ${response.statusCode} ${response.body}');
+    }
+  }
+  
+  Future fetchHost(Host host) async {
+    final headers = Map<String, String>();
+    final auth = await this.appSettings.getAuthData();
+    headers['Authorization'] = "Basic $auth";
+    headers['Accept'] = "application/json";
+
+    print("fetching host ${host.getData('host_name')}");
+
+    String icingaUrl = await this.appSettings.getIcingaUrl();
+
+    final response = await http.get('${icingaUrl}monitoring/list/hosts?host=${host.getData('host_name')}&modifyFilter=1&format=json', headers: headers);
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.body);
+
+      if (jsonData.length == 1) {
+        host.update(jsonData[0]);
+      } else {
+        throw Exception("host not found");
+      }
     } else {
       // If that call was not successful, throw an error.
       throw Exception('Failed to load host, ${response.request.method} ${response.request.url} ${response.statusCode} ${response.body}');

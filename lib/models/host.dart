@@ -1,17 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:mobilemon/controller/hostcontroller.dart';
+import 'package:mobilemon/controller/icingaobject.dart';
 
-class Host implements Comparable<Host> {
+class Host with IcingaObject {
   String name;
   String address;
   Map<String, dynamic> data;
 
-  Host({this.name, this.data});
+  HostController controller;
 
-  factory Host.fromJson(Map<String, dynamic> json) {
+  final String stateField = 'host_state';
+
+  Host({this.name, this.data, this.controller});
+
+  factory Host.fromJson(Map<String, dynamic> json, HostController controller) {
     return Host(
       name: json['host_name'],
       data: json,
+      controller: controller,
     );
   }
 
@@ -25,37 +30,5 @@ class Host implements Comparable<Host> {
       return "${this.getData('host_display_name')} (${this.name})";
     }
     return "${this.name}";
-  }
-
-  String getData(String key) {
-    if (this.data.containsKey(key)) {
-      return this.data[key];
-    }
-    return null;
-  }
-
-  Icon getIcon() {
-    return this.getState() ? Icon(Icons.error, color: Colors.white,) : Icon(Icons.check, color: Colors.green[800]);
-  }
-
-  Color getBackgroundColor() {
-    return this.getState() ? Colors.deepOrangeAccent[400] : null;
-  }
-
-  bool getState() {
-    if (this.data['host_state'] == '1') {
-      return true;
-    }
-    return false;
-  }
-
-  int compareTo(Host b) {
-    if (this.getData('host_state') == "1" && b.getData('host_state') == "1") {
-      return 0;
-    } else if (this.getData('host_state') == "1" && b.getData('host_state') == "0") {
-      return 1;
-    } else {
-      return -1;
-    }
   }
 }

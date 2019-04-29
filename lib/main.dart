@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobilemon/controller/appsettings.dart';
+import 'package:mobilemon/controller/servicecontroller.dart';
+import 'package:mobilemon/models/service.dart';
 import 'package:mobilemon/screens/login.dart';
 import 'package:queries/collections.dart';
 
@@ -19,7 +22,15 @@ void main() async {
     initRoute = '/login';
   }
 
-  getIt.registerSingleton<HostController>(new HostController());
+  AppSettings appSettings = new AppSettings();
+  ServiceController serviceController = new ServiceController(appSettings: appSettings);
+  HostController hostController = new HostController(appSettings: appSettings, serviceController: serviceController);
+
+  serviceController.setHostController(hostController);
+
+  getIt.registerSingleton<AppSettings>(appSettings);
+  getIt.registerSingleton<ServiceController>(serviceController);
+  getIt.registerSingleton<HostController>(hostController);
 
   runApp(MaterialApp(
     // Start the app with the "/" named route. In our case, the app will start
@@ -53,7 +64,7 @@ class MobileMon extends StatelessWidget {
           body: new Center(
             child: TabBarView(
               children: <Widget>[
-                new Text("not implemented"),
+                new ServiceProblemListView(),
                 new HostProblemListView(),
               ],
             ),
@@ -174,3 +185,86 @@ class HostProblemListViewState extends State<HostProblemListView> {
     );
   }
 }
+
+class ServiceProblemListView extends StatefulWidget {
+  @override
+  createState() => new ServiceProblemListViewState();
+}
+
+class ServiceProblemListViewState extends State<ServiceProblemListView> {
+  ServiceController controller = getIt.get<ServiceController>();
+
+  Future<void> _refresh() async {
+    print('refreshing...');
+    await controller.fetchServices();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Collection<Service>>(
+      future: controller.getProblemServices(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data.length == 0) {
+            return new Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Icon(
+                  Icons.check,
+                  color: Colors.green[800],
+                  size: 50,
+                ),
+                new Text("Alles OK!"),
+              ],
+            );
+          }
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                return new Container(
+                  decoration: new BoxDecoration(
+                    //color: snapshot.data[index].getBackgroundColor(),
+                    border: Border(
+                      left: BorderSide(width: 5, color: snapshot.data[index].getBorderColor()),
+                    ),
+                  ),
+                  child: new ListTile(
+                    title: Text("${snapshot.data[index].getName()}"),
+                    subtitle: Text(snapshot.data[index].getData("service_output")),
+                    //leading: snapshot.data[index].getIcon(),
+                    onTap: () {
+                      print("onTap ${snapshot.data[index].name}");
+                    },
+                  ),
+                );
+              },
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Icon(
+                Icons.error,
+                color: Colors.red,
+                size: 50,
+              ),
+              Text("${snapshot.error}"),
+            ],
+          );
+        }
+
+        return new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+          ],
+        );
+      },
+    );
+  }
+}
+
