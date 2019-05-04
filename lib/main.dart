@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/appsettings.dart';
+import 'package:mobilemon/controller/icingacontroller.dart';
+import 'package:mobilemon/models/icingaobject.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
-import 'package:mobilemon/models/service.dart';
+import 'package:mobilemon/screens/drawermenu.dart';
 import 'package:mobilemon/screens/login.dart';
+import 'package:mobilemon/views/parts/list.dart';
 import 'package:queries/collections.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mobilemon/controller/hostcontroller.dart';
 import 'package:mobilemon/controller/service_locator.dart';
-import 'package:mobilemon/models/host.dart';
 
 void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -17,9 +19,9 @@ void main() async {
   var username = prefs.getString('username');
   var password = prefs.getString('password');
 
-  var initRoute = '/login';
+  var initRoute = '/';
   if (host == null && username == null && password == null) {
-    initRoute = '/login';
+    //initRoute = '/login';
   }
 
   AppSettings appSettings = new AppSettings();
@@ -38,93 +40,97 @@ void main() async {
     initialRoute: initRoute,
     routes: {
       // When we navigate to the "/" route, build the FirstScreen Widget
-      '/': (context) => MobileMon(),
-      '/login': (context) => LoginPage(),
+      '/': (context) => MobileMonHomepage(),
+      '/lists/hosts': (context) => MobileMonList(controller: getIt.get<HostController>(), title: "Hosts",),
+      '/lists/services': (context) => MobileMonList(controller: getIt.get<ServiceController>(), title: "Services",),
+      '/settings': (context) => SettingsPage(),
     },
+    title: 'MobileMon',
   ));
 }
 
-class MobileMon extends StatelessWidget {
+class MobileMonHomepage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'MobileMon',
-      home: DefaultTabController(
-        length: 2,
-        child: new Scaffold(
-          appBar: new AppBar(
-            title: new Text('Problems'),
-            bottom: TabBar(
-              tabs: [
-                Tab(text: "Services"),
-                Tab(text: "Hosts"),
-              ],
-            ),
-          ),
-          body: new Center(
-            child: TabBarView(
-              children: <Widget>[
-                new ServiceProblemListView(),
-                new HostProblemListView(),
-              ],
-            ),
-          ),
-          drawer: Drawer(
-            // Add a ListView to the drawer. This ensures the user can scroll
-            // through the options in the Drawer if there isn't enough vertical
-            // space to fit everything.
-            child: ListView(
-              // Important: Remove any padding from the ListView.
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                Container(
-                  height: 100.0,
-                  child: DrawerHeader(
-                    child: Text('Drawer Header'),
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
-                    ),
-                  ),
-                ),
-                ListTile(
-                  title: Text('Problems'),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/');
-                  },
-                ),
-                ListTile(
-                  title: Text('Login'),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/login');
-                  },
-                ),
-              ],
-            ),
+    return DefaultTabController(
+      length: 2,
+      child: new Scaffold(
+        appBar: new AppBar(
+          title: new Text('Problems'),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "Services"),
+              Tab(text: "Hosts"),
+            ],
           ),
         ),
+        body: new Center(
+          child: TabBarView(
+            children: <Widget>[
+              new IcingaObjectListView(controller: getIt.get<ServiceController>()),
+              new IcingaObjectListView(controller: getIt.get<HostController>()),
+            ],
+          ),
+        ),
+        drawer: DrawerMenu(),
       ),
     );
   }
 }
 
-class HostProblemListView extends StatefulWidget {
+class MobileMonList extends StatelessWidget {
+  const MobileMonList({
+    Key key,
+    @required this.controller,
+    @required this.title,
+  }): super(key: key);
+
+  final IcingaObjectController controller;
+  final String title;
+
   @override
-  createState() => new HostProblemListViewState();
+  Widget build(BuildContext context) {
+    return  new Scaffold(
+      appBar: new AppBar(
+        title: new Text(this.title),
+      ),
+      body: new Center(
+        child: IcingaObjectListView(controller: this.controller, listAll: true,)
+        ),
+      drawer: DrawerMenu(),
+    );
+  }
 }
 
-class HostProblemListViewState extends State<HostProblemListView> {
-  HostController controller = getIt.get<HostController>();
+class IcingaObjectListView extends StatefulWidget {
+  const IcingaObjectListView({
+    Key key,
+    @required this.controller,
+    this.listAll = false,
+  }): super(key: key);
 
+  final IcingaObjectController controller;
+  final bool listAll;
+
+  @override
+  createState() => new IcingaObjectListViewState();
+}
+
+class IcingaObjectListViewState extends State<IcingaObjectListView> {
   Future<void> _refresh() async {
     print('refreshing...');
-    await controller.fetchHosts();
+    await widget.controller.fetch();
+    setState(() {});
+  }
+
+  void _handleClick(IcingaObject iobject) {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Collection<Host>>(
-      future: controller.getProblemHosts(),
+    return FutureBuilder<Collection<IcingaObject>>(
+      future: widget.listAll ? widget.controller.getAll() : widget.controller.getAllWithProblems(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {
@@ -145,19 +151,7 @@ class HostProblemListViewState extends State<HostProblemListView> {
             child: ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (context, index) {
-                return new Container(
-                  decoration: new BoxDecoration(
-                    color: snapshot.data[index].getBackgroundColor(),
-                  ),
-                  child: new ListTile(
-                    title: Text("${snapshot.data[index].getName()}"),
-                    subtitle: Text(snapshot.data[index].getData("host_output")),
-                    leading: snapshot.data[index].getIcon(),
-                    onTap: () {
-                      print("onTap ${snapshot.data[index].name}");
-                    },
-                  ),
-                );
+                return ListRow(iobject: snapshot.data[index], clicked: _handleClick);
               },
             ),
           );
@@ -185,86 +179,3 @@ class HostProblemListViewState extends State<HostProblemListView> {
     );
   }
 }
-
-class ServiceProblemListView extends StatefulWidget {
-  @override
-  createState() => new ServiceProblemListViewState();
-}
-
-class ServiceProblemListViewState extends State<ServiceProblemListView> {
-  ServiceController controller = getIt.get<ServiceController>();
-
-  Future<void> _refresh() async {
-    print('refreshing...');
-    await controller.fetchServices();
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Collection<Service>>(
-      future: controller.getProblemServices(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.length == 0) {
-            return new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Icon(
-                  Icons.check,
-                  color: Colors.green[800],
-                  size: 50,
-                ),
-                new Text("Alles OK!"),
-              ],
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: _refresh,
-            child: ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, index) {
-                return new Container(
-                  decoration: new BoxDecoration(
-                    //color: snapshot.data[index].getBackgroundColor(),
-                    border: Border(
-                      left: BorderSide(width: 5, color: snapshot.data[index].getBorderColor()),
-                    ),
-                  ),
-                  child: new ListTile(
-                    title: Text("${snapshot.data[index].getName()}"),
-                    subtitle: Text(snapshot.data[index].getData("service_output")),
-                    //leading: snapshot.data[index].getIcon(),
-                    onTap: () {
-                      print("onTap ${snapshot.data[index].name}");
-                    },
-                  ),
-                );
-              },
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 50,
-              ),
-              Text("${snapshot.error}"),
-            ],
-          );
-        }
-
-        return new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CircularProgressIndicator(),
-          ],
-        );
-      },
-    );
-  }
-}
-

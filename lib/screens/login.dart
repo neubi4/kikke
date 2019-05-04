@@ -37,12 +37,12 @@ class LoginData {
   }
 }
 
-class LoginPage extends StatefulWidget {
+class SettingsPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _LoginPageState();
+  State<StatefulWidget> createState() => new _SettingsPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SettingsPageState extends State<SettingsPage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   LoginData _data = new LoginData();
 

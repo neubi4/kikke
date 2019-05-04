@@ -1,5 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/controller/icingaobject.dart';
+import 'package:mobilemon/models/icingaobject.dart';
 
 class Host with IcingaObject {
   String name;
@@ -9,6 +10,8 @@ class Host with IcingaObject {
   HostController controller;
 
   final String stateField = 'host_state';
+
+  final String outputField = 'host_output';
 
   Host({this.name, this.data, this.controller});
 

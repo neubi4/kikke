@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mobilemon/controller/appsettings.dart';
+import 'package:mobilemon/controller/icingacontroller.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
 
 import 'package:mobilemon/models/host.dart';
 import 'package:queries/collections.dart';
 
-class HostController {
+class HostController implements IcingaObjectController {
   Map<String, Host> hosts = new Map();
   bool fetchedAllHosts = false;
   DateTime lastUpdate = new DateTime(1970);
@@ -17,7 +18,7 @@ class HostController {
 
   HostController({this.appSettings, this.serviceController});
 
-  Future fetchHosts() async {
+  Future fetch() async {
     final headers = Map<String, String>();
     final auth = await this.appSettings.getAuthData();
     headers['Authorization'] = "Basic $auth";
@@ -77,11 +78,11 @@ class HostController {
   Future<void> checkUpdate() async {
     Duration diff = DateTime.now().difference(this.lastUpdate);
     if (!this.fetchedAllHosts | (diff.inSeconds > 60)) {
-      await this.fetchHosts();
+      await this.fetch();
     }
   }
 
-  Future<Collection<Host>> getHosts() async {
+  Future<Collection<Host>> getAll() async {
     await this.checkUpdate();
 
     List<Host> l = new List();
@@ -91,7 +92,7 @@ class HostController {
     return m.where((host) => host.getData('host_state') != "3").orderBy((host) => int.parse(host.getData('host_state')) * -1).thenBy((host) => host.getData('host_last_state_change')).toCollection();
   }
 
-  Future<Collection<Host>> getProblemHosts() async {
+  Future<Collection<Host>> getAllWithProblems() async {
     await this.checkUpdate();
 
     List<Host> l = new List();

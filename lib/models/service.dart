@@ -1,5 +1,5 @@
 import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/controller/icingaobject.dart';
+import 'package:mobilemon/models/icingaobject.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
 import 'package:mobilemon/models/host.dart';
 
@@ -11,6 +11,8 @@ class Service with IcingaObject {
   Map<String, dynamic> data;
 
   final String stateField = 'service_state';
+
+  final String outputField = 'service_output';
 
   Service({this.data, this.host, this.serviceController});
 
