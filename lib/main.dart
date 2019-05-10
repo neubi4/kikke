@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/appsettings.dart';
 import 'package:mobilemon/controller/icingacontroller.dart';
+import 'package:mobilemon/models/host.dart';
 import 'package:mobilemon/models/icingaobject.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
+import 'package:mobilemon/models/service.dart';
 import 'package:mobilemon/screens/drawermenu.dart';
 import 'package:mobilemon/screens/login.dart';
 import 'package:mobilemon/views/parts/list.dart';
@@ -43,6 +45,7 @@ void main() async {
       '/': (context) => MobileMonHomepage(),
       '/lists/hosts': (context) => MobileMonList(controller: getIt.get<HostController>(), title: "Hosts",),
       '/lists/services': (context) => MobileMonList(controller: getIt.get<ServiceController>(), title: "Services",),
+      '/host': (context) => MobileMonHost(title: "Service"),
       '/settings': (context) => SettingsPage(),
     },
     title: 'MobileMon',
@@ -102,6 +105,30 @@ class MobileMonList extends StatelessWidget {
   }
 }
 
+class MobileMonHost extends StatelessWidget {
+  const MobileMonHost({
+    Key key,
+    @required this.title,
+  }): super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    Host host = ModalRoute.of(context).settings.arguments;
+
+    return  new Scaffold(
+      appBar: new AppBar(
+        title: new Text(this.title),
+      ),
+      body: new Center(
+        child: IcingaHostView(host: host)
+        ),
+      drawer: DrawerMenu(),
+    );
+  }
+}
+
 class IcingaObjectListView extends StatefulWidget {
   const IcingaObjectListView({
     Key key,
@@ -124,7 +151,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
   }
 
   void _handleClick(IcingaObject iobject) {
-    setState(() {});
+    Navigator.popAndPushNamed(context, '/host', arguments: iobject);
   }
 
   @override
@@ -176,6 +203,72 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
           ],
         );
       },
+    );
+  }
+}
+
+class IcingaHostView extends StatefulWidget {
+  const IcingaHostView({
+    Key key,
+    @required this.host,
+  }): super(key: key);
+
+  final Host host;
+
+  @override
+  createState() => new IcingaHostViewState();
+}
+
+class IcingaHostViewState extends State<IcingaHostView> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(15),
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(5),
+              alignment: Alignment.topLeft,
+              child: Text(
+                widget.host.getData('host_display_name'),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(5),
+              alignment: Alignment.topLeft,
+              child: Row(
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      for (var s in ["Hostname", "Displayname"])
+                        Text(
+                          s,
+                          textAlign: TextAlign.right,
+                        )
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                  for (var s in ["host_name", "host_display_name"])
+                    Text(
+                      widget.host.getData(s),
+                      textAlign: TextAlign.right,
+                    )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      )
     );
   }
 }
