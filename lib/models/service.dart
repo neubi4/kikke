@@ -10,9 +10,7 @@ class Service with IcingaObject {
 
   Map<String, dynamic> data;
 
-  final String stateField = 'service_state';
-
-  final String outputField = 'service_output';
+  final String fieldPrefix = 'service';
 
   Service({this.data, this.host, this.serviceController});
 
@@ -31,9 +29,9 @@ class Service with IcingaObject {
   }
 
   String getName() {
-    if (this.getData('service_display_name') != null) {
-      return "${this.host.getName()}: ${this.getData('service_display_name')} (${this.getData('service_description')})";
+    if (this.getData('display_name') != null) {
+      return "${this.host.getName()}: ${this.getData('display_name')}";
     }
-    return "${this.host.getName()}:${this.getData('service_description')}";
+    return "${this.host.getName()}: ${this.getData('description')}";
   }
 }

@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
 import 'package:mobilemon/controller/service_locator.dart';
 
+
 void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var host = prefs.getString('host');
@@ -45,7 +46,7 @@ void main() async {
       '/': (context) => MobileMonHomepage(),
       '/lists/hosts': (context) => MobileMonList(controller: getIt.get<HostController>(), title: "Hosts",),
       '/lists/services': (context) => MobileMonList(controller: getIt.get<ServiceController>(), title: "Services",),
-      '/host': (context) => MobileMonHost(title: "Service"),
+      '/detail': (context) => MobileMonDetail(),
       '/settings': (context) => SettingsPage(),
     },
     title: 'MobileMon',
@@ -105,26 +106,27 @@ class MobileMonList extends StatelessWidget {
   }
 }
 
-class MobileMonHost extends StatelessWidget {
-  const MobileMonHost({
-    Key key,
-    @required this.title,
+class MobileMonDetail extends StatefulWidget {
+  const MobileMonDetail({
+    Key key
   }): super(key: key);
 
-  final String title;
+  @override
+  createState() => new MobileMonDetailState();
+}
 
+class MobileMonDetailState extends State<MobileMonDetail> {
   @override
   Widget build(BuildContext context) {
-    Host host = ModalRoute.of(context).settings.arguments;
+    IcingaObject iobject = ModalRoute.of(context).settings.arguments;
 
     return  new Scaffold(
       appBar: new AppBar(
-        title: new Text(this.title),
+        title: new Text(iobject.getName()),
       ),
       body: new Center(
-        child: IcingaHostView(host: host)
-        ),
-      drawer: DrawerMenu(),
+          child: IcingaDetailView(iobject: iobject)
+      ),
     );
   }
 }
@@ -151,7 +153,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
   }
 
   void _handleClick(IcingaObject iobject) {
-    Navigator.popAndPushNamed(context, '/host', arguments: iobject);
+    Navigator.pushNamed(context, '/detail', arguments: iobject);
   }
 
   @override
@@ -207,65 +209,83 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
   }
 }
 
-class IcingaHostView extends StatefulWidget {
-  const IcingaHostView({
+class IcingaDetailView extends StatefulWidget {
+  const IcingaDetailView({
     Key key,
-    @required this.host,
+    @required this.iobject,
   }): super(key: key);
 
-  final Host host;
+  final IcingaObject iobject;
 
   @override
-  createState() => new IcingaHostViewState();
+  createState() => new IcingaDetailViewState();
 }
 
-class IcingaHostViewState extends State<IcingaHostView> {
+class IcingaDetailViewState extends State<IcingaDetailView> {
+  List<Widget> getDetails(BuildContext context, IcingaObject iobject) {
+    return [
+      ListRow(iobject: iobject, clicked: _handleClick),
+      Card(
+          child: ListTile(
+            subtitle: Text("Name"),
+            title: Text(iobject.getName()),
+          )
+      ),
+      Card(
+          child: ListTile(
+            subtitle: Text("Outout"),
+            title: Text(iobject.getData(iobject.outputField)),
+          )
+      ),
+      Card(
+          child: ListTile(
+            subtitle: Text("State Since"),
+            title: Text("${iobject.getStateSince()} (${iobject.getStateSinceDate()})"),
+          )
+      ),
+      Card(
+          child: ListTile(
+            subtitle: Text("Check Command"),
+            title: Text(iobject.getData('check_command')),
+          )
+      ),
+    ];
+  }
+
+  List<Widget> getServices(BuildContext context, Host host) {
+    List<Widget> l =  List();
+    ServiceController controller = getIt.get<ServiceController>();
+    Collection<Service> services = controller.getAllForHost(host);
+    print(services);
+
+    for (var i = 0; i < services.length; i++) {
+      l.add(ListRowNoHostname(iobject: services[i], clicked: _handleClick));
+    }
+
+    return l;
+  }
+
+  void _handleClick(IcingaObject iobject) {
+    if (iobject != widget.iobject) {
+      Navigator.pushNamed(context, '/detail', arguments: iobject);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    Service service;
+    if (widget.iobject is Service) {
+      service = widget.iobject;
+    }
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(15),
-        child: Column(
+        child: ListView(
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(5),
-              alignment: Alignment.topLeft,
-              child: Text(
-                widget.host.getData('host_display_name'),
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                  fontSize: 30,
-                ),
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(5),
-              alignment: Alignment.topLeft,
-              child: Row(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      for (var s in ["Hostname", "Displayname"])
-                        Text(
-                          s,
-                          textAlign: TextAlign.right,
-                        )
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                  for (var s in ["host_name", "host_display_name"])
-                    Text(
-                      widget.host.getData(s),
-                      textAlign: TextAlign.right,
-                    )
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            ...getDetails(context, widget.iobject),
+            if (widget.iobject is Service)
+              ...getDetails(context, service.host),
+            if (widget.iobject is Host)
+              ...getServices(context, widget.iobject),
           ],
         ),
       )

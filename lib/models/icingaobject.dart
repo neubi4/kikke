@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
 
 abstract class IcingaObject {
   String name;
   Map<String, dynamic> data;
 
-  final String stateField = '';
-
-  final String outputField = '';
+  final String fieldPrefix = '';
+  final String stateField = 'state';
+  final String outputField = 'output';
+  final String lastStateChangeField = 'last_state_change';
+  final String checkCommandField = 'check_command';
 
   static const state_ok = 0;
   static const state_warning = 1;
@@ -34,15 +39,19 @@ abstract class IcingaObject {
     3: Icon(Icons.error, color: Colors.deepPurple),
   };
 
-  String getData(String key) {
+  String getRawData(String key) {
     if (this.data.containsKey(key)) {
       return this.data[key];
     }
     return null;
   }
 
+  String getData(String key) {
+    return this.getRawData("${this.fieldPrefix}_$key");
+  }
+
   String getName() {
-    return this.getData('object_name');
+    return this.getRawData('object_name');
   }
 
   Icon getIcon() {
@@ -58,6 +67,18 @@ abstract class IcingaObject {
   }
 
   int getState() {
-    return int.parse(this.data[this.stateField]);
+    return int.parse(this.getData(this.stateField));
+  }
+
+  String getStateSince() {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getData(this.lastStateChangeField)) * 1000);
+
+    return timeago.format(date);
+  }
+
+  String getStateSinceDate() {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getData(this.lastStateChangeField)) * 1000);
+
+    return "${DateFormat.yMMMd().format(date)} ${DateFormat.Hms().format(date)}";
   }
 }

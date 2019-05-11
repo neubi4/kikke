@@ -55,11 +55,11 @@ class HostController implements IcingaObjectController {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    print("fetching host ${host.getData('host_name')}");
+    print("fetching host ${host.getData('name')}");
 
     String icingaUrl = await this.appSettings.getIcingaUrl();
 
-    final response = await http.get('${icingaUrl}monitoring/list/hosts?host=${host.getData('host_name')}&modifyFilter=1&format=json', headers: headers);
+    final response = await http.get('${icingaUrl}monitoring/list/hosts?host=${host.getData('name')}&modifyFilter=1&format=json', headers: headers);
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -89,7 +89,7 @@ class HostController implements IcingaObjectController {
     this.hosts.forEach((name, host) => l.add(host));
 
     var m = new Collection<Host>(l);
-    return m.where((host) => host.getData('host_state') != "3").orderBy((host) => int.parse(host.getData('host_state')) * -1).thenBy((host) => host.getData('host_last_state_change')).toCollection();
+    return m.where((host) => host.getData('state') != "3").orderBy((host) => int.parse(host.getData('state')) * -1).thenBy((host) => host.getData('last_state_change')).toCollection();
   }
 
   Future<Collection<Host>> getAllWithProblems() async {
@@ -99,7 +99,7 @@ class HostController implements IcingaObjectController {
     this.hosts.forEach((name, host) => l.add(host));
 
     var m = new Collection<Host>(l);
-    return m.where((host) => host.getData('host_state') != "0").orderBy((host) => int.parse(host.getData('host_state')) * -1).thenBy((host) => host.getData('host_last_state_change')).toCollection();
+    return m.where((host) => host.getData('state') != "0").orderBy((host) => int.parse(host.getData('state')) * -1).thenBy((host) => host.getData('last_state_change')).toCollection();
   }
 
   Future<Host> getHost(String hostName) async {

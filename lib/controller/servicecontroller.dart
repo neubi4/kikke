@@ -66,11 +66,11 @@ class ServiceController implements IcingaObjectController {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    print("fetching services for host ${host.getData('host_name')}");
+    print("fetching services for host ${host.getData('name')}");
 
     String icingaUrl = await this.appSettings.getIcingaUrl();
 
-    final response = await http.get('${icingaUrl}monitoring/list/services?host=${host.getData('host_name')}&modifyFilter=1&format=json', headers: headers);
+    final response = await http.get('${icingaUrl}monitoring/list/services?host=${host.getData('name')}&modifyFilter=1&format=json', headers: headers);
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);      
       jsonData.forEach((item) async {
@@ -110,7 +110,7 @@ class ServiceController implements IcingaObjectController {
     this.services.forEach((name, service) => l.add(service));
     
     var m = new Collection<Service>(l);
-    return m.orderBy((service) => int.parse(service.getData('service_state')) * -1).thenBy((service) => service.getData('service_last_state_change')).toCollection();
+    return m.orderBy((service) => int.parse(service.getData('state')) * -1).thenBy((service) => service.getData('last_state_change')).toCollection();
   }
 
   Future<Collection<Service>> getAllWithProblems() async {
@@ -120,6 +120,14 @@ class ServiceController implements IcingaObjectController {
     this.services.forEach((name, service) => l.add(service));
 
     var m = new Collection<Service>(l);
-    return m.where((service) => service.getData('service_state') != "0").orderBy((service) => int.parse(service.getData('service_state')) * -1).thenBy((service) => service.getData('service_last_state_change')).toCollection();
+    return m.where((service) => service.getData('state') != "0").orderBy((service) => int.parse(service.getData('state')) * -1).thenBy((service) => service.getData('last_state_change')).toCollection();
+  }
+
+  Collection<Service> getAllForHost(Host host) {
+    List<Service> l = new List();
+    this.services.forEach((name, service) => service.host == host ? l.add(service) : false);
+
+    var m = new Collection<Service>(l);
+    return m.where((service) => service.getData('state') != "0").orderBy((service) => int.parse(service.getData('state')) * -1).thenBy((service) => service.getData('last_state_change')).toCollection();
   }
 }

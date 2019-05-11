@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
 import 'package:mobilemon/models/icingaobject.dart';
 
@@ -9,9 +8,7 @@ class Host with IcingaObject {
 
   HostController controller;
 
-  final String stateField = 'host_state';
-
-  final String outputField = 'host_output';
+  final String fieldPrefix = 'host';
 
   Host({this.name, this.data, this.controller});
 
@@ -29,8 +26,8 @@ class Host with IcingaObject {
   }
 
   String getName() {
-    if (this.getData('host_display_name') != null) {
-      return "${this.getData('host_display_name')} (${this.name})";
+    if (this.getData('display_name') != null) {
+      return "${this.getData('display_name')}";
     }
     return "${this.name}";
   }

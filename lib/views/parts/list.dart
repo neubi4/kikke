@@ -16,7 +16,7 @@ class ListRow extends StatelessWidget {
         ),
       ),
       child: new ListTile(
-        title: Text("${this.iobject.getName()}"),
+        title: Text(this.getName()),
         subtitle: Text(this.iobject.getData(this.iobject.outputField)),
         //leading: snapshot.data[index].getIcon(),
         onTap: () {
@@ -25,5 +25,20 @@ class ListRow extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String getName() {
+    return this.iobject.getName();
+  }
+}
+
+class ListRowNoHostname extends ListRow {
+  ListRowNoHostname({Key key, IcingaObject iobject, ValueChanged<IcingaObject> clicked}): super(key: key, iobject: iobject, clicked: clicked);
+
+  String getName() {
+    if (this.iobject.getData('display_name') != null) {
+      return this.iobject.getData('display_name');
+    }
+    return this.iobject.getData('description');
   }
 }
