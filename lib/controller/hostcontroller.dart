@@ -18,7 +18,15 @@ class HostController implements IcingaObjectController {
 
   HostController({this.appSettings, this.serviceController});
 
+  void reset() {
+    this.lastUpdate = DateTime(1970);
+    this.fetchedAllHosts = false;
+    this.hosts.clear();
+  }
+
   Future fetch() async {
+    this.lastUpdate = DateTime.now();
+
     final headers = Map<String, String>();
     final auth = await this.appSettings.getAuthData();
     headers['Authorization'] = "Basic $auth";
@@ -41,7 +49,6 @@ class HostController implements IcingaObjectController {
         }
 
         this.fetchedAllHosts = true;
-        this.lastUpdate = DateTime.now();
       });
     } else {
       // If that call was not successful, throw an error.
@@ -89,7 +96,7 @@ class HostController implements IcingaObjectController {
     this.hosts.forEach((name, host) => l.add(host));
 
     var m = new Collection<Host>(l);
-    return m.where((host) => host.getData('state') != "3").orderBy((host) => int.parse(host.getData('state')) * -1).thenBy((host) => host.getData('last_state_change')).toCollection();
+    return m.orderBy((host) => int.parse(host.getData('state')) * -1).thenBy((host) => host.getName().toLowerCase()).thenBy((host) => host.getData('last_state_change')).toCollection();
   }
 
   Future<Collection<Host>> getAllWithProblems() async {

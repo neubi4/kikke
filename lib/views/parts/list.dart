@@ -20,7 +20,6 @@ class ListRow extends StatelessWidget {
         subtitle: Text(this.iobject.getData(this.iobject.outputField)),
         //leading: snapshot.data[index].getIcon(),
         onTap: () {
-          print("onTap ${this.iobject.getName()}");
           clicked(this.iobject);
         },
       ),

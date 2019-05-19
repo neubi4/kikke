@@ -17,17 +17,14 @@ import 'package:mobilemon/controller/service_locator.dart';
 
 
 void main() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var host = prefs.getString('host');
-  var username = prefs.getString('username');
-  var password = prefs.getString('password');
+  AppSettings appSettings = new AppSettings();
+  await appSettings.loadData();
 
   var initRoute = '/';
-  if (host == null && username == null && password == null) {
-    //initRoute = '/login';
+  if (appSettings.icingaUrl == null && appSettings.username == null && appSettings.password == null) {
+    initRoute = '/settings';
   }
 
-  AppSettings appSettings = new AppSettings();
   ServiceController serviceController = new ServiceController(appSettings: appSettings);
   HostController hostController = new HostController(appSettings: appSettings, serviceController: serviceController);
 
@@ -171,7 +168,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
                   color: Colors.green[800],
                   size: 50,
                 ),
-                new Text("Alles OK!"),
+                new Text("Liste leer!"),
               ],
             );
           }
@@ -256,7 +253,6 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     List<Widget> l =  List();
     ServiceController controller = getIt.get<ServiceController>();
     Collection<Service> services = controller.getAllForHost(host);
-    print(services);
 
     for (var i = 0; i < services.length; i++) {
       l.add(ListRowNoHostname(iobject: services[i], clicked: _handleClick));

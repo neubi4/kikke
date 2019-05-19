@@ -1,39 +1,61 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:validate/validate.dart';
+import 'package:mobilemon/controller/appsettings.dart';
+import 'package:mobilemon/controller/hostcontroller.dart';
+import 'package:mobilemon/controller/service_locator.dart';
+import 'package:mobilemon/controller/servicecontroller.dart';
 
 class LoginData {
-  String url = '';
-  String username = '';
-  String password = '';
+  String url;
+  String username;
+  String password;
 
-  SharedPreferences prefs;
+  AppSettings settings;
 
-  static LoginData _instance;
+  LoginData() {
+    this.settings = getIt.get<AppSettings>();
+  }
 
-  factory LoginData() {
-    if(_instance == null) {
-      _instance = LoginData._internal();
+  Future<bool> loadFromSettings() async {
+    if (this.username == null && this.password == null && this.url == null) {
+      await this.settings.loadData();
+      this.url = this.settings.icingaUrl;
+      this.username = this.settings.username;
+      this.password = this.settings.password;
     }
 
-    return _instance;
+    return true;
   }
 
-  LoginData._internal();
+  Future save(BuildContext context) async {
+    try {
+      await this.settings.checkData(this.url, this.username, this.password);
+      await this.settings.saveData(this.url, this.username, this.password);
 
-  void loadFromSettings() async {
-    prefs = await SharedPreferences.getInstance();
-    url = prefs.getString('url');
-    username = prefs.getString('username');
-    password = prefs.getString('password');
-  }
+      ServiceController serviceController = getIt.get<ServiceController>();
+      HostController hostController = getIt.get<HostController>();
 
-  Future save() async {
-    await prefs.setString('url', url);
-    await prefs.setString('username', username);
-    await prefs.setString('password', password);
+      serviceController.reset();
+      hostController.reset();
+
+      await serviceController.checkUpdate();
+
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.pushNamed(context, '/');
+    } on Exception catch (error) {
+      Navigator.of(context, rootNavigator: true).pop();
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text(error.toString()),
+            );
+          }
+      );
+    }
   }
 }
 
@@ -75,17 +97,29 @@ class _SettingsPageState extends State<SettingsPage> {
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
 
-      print('Printing the login data.');
-      print('Url: ${_data.url}');
-      print('Username: ${_data.username}');
-      print('Password: ${_data.password}');
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: Text('Speichert'),
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                ],
+              )
+            ],
+          );
+        }
+      );
 
-      await _data.save();
+      await _data.save(context);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget buildForm(BuildContext context) {
     final Size screenSize = MediaQuery
         .of(context)
         .size;
@@ -101,41 +135,41 @@ class _SettingsPageState extends State<SettingsPage> {
             child: new ListView(
               children: <Widget>[
                 new TextFormField(
-                    keyboardType: TextInputType.url,
-                    // Use email input type for emails.
-                    decoration: new InputDecoration(
-                        hintText: 'https://your-icinga.com',
-                        labelText: 'Icingaweb2 URL'
-                    ),
-                    initialValue: _data.url,
-                    validator: this._validateUrl,
-                    onSaved: (String value) {
-                      this._data.url = value;
-                    },
+                  keyboardType: TextInputType.url,
+                  // Use email input type for emails.
+                  decoration: new InputDecoration(
+                      hintText: 'https://your-icinga.com',
+                      labelText: 'Icingaweb2 URL'
+                  ),
+                  initialValue: _data.url,
+                  validator: this._validateUrl,
+                  onSaved: (String value) {
+                    this._data.url = value;
+                  },
                 ),
                 new TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    // Use email input type for emails.
-                    decoration: new InputDecoration(
-                        hintText: 'Username',
-                        labelText: 'Enter your password'
-                    ),
-                    initialValue: _data.username,
-                    validator: this._validateUsername,
-                    onSaved: (String value) {
-                      this._data.username = value;
-                    },
+                  keyboardType: TextInputType.emailAddress,
+                  // Use email input type for emails.
+                  decoration: new InputDecoration(
+                      hintText: 'Username',
+                      labelText: 'Enter your password'
+                  ),
+                  initialValue: _data.username,
+                  validator: this._validateUsername,
+                  onSaved: (String value) {
+                    this._data.username = value;
+                  },
                 ),
                 new TextFormField(
-                    obscureText: true, // Use secure text for passwords.
-                    decoration: new InputDecoration(
-                        hintText: 'Password',
-                        labelText: 'Enter your password'
-                    ),
-                    validator: this._validatePassword,
-                    onSaved: (String value) {
-                      this._data.password = value;
-                    },
+                  obscureText: true, // Use secure text for passwords.
+                  decoration: new InputDecoration(
+                      hintText: 'Password',
+                      labelText: 'Enter your password'
+                  ),
+                  validator: this._validatePassword,
+                  onSaved: (String value) {
+                    this._data.password = value;
+                  },
                 ),
                 new Container(
                   width: screenSize.width,
@@ -157,6 +191,37 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           )
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+        future: _data.loadFromSettings(),
+        builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return this.buildForm(context);
+        } else if (snapshot.hasError) {
+          return new Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Icon(
+                Icons.error,
+                color: Colors.red,
+                size: 50,
+              ),
+              Text("${snapshot.error}"),
+            ],
+          );
+        }
+
+        return new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircularProgressIndicator(),
+          ],
+        );
+      }
     );
   }
 }
