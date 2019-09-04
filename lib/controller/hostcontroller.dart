@@ -56,7 +56,7 @@ class HostController implements IcingaObjectController {
     }
   }
   
-  Future fetchHost(Host host) async {
+  Future<Host> fetchHost(Host host) async {
     final headers = Map<String, String>();
     final auth = await this.appSettings.getAuthData();
     headers['Authorization'] = "Basic $auth";
@@ -73,6 +73,7 @@ class HostController implements IcingaObjectController {
 
       if (jsonData.length == 1) {
         host.update(jsonData[0]);
+        return host;
       } else {
         throw Exception("host not found");
       }

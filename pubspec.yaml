@@ -16,6 +16,7 @@ dependencies:
   queries: ^0.1.12
   intl: ^0.15.8
   timeago: ^2.0.14
+  auto_size_text: ^2.1.0
 
 dev_dependencies:
   flutter_test:

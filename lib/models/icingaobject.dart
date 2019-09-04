@@ -18,6 +18,13 @@ abstract class IcingaObject {
   static const state_critical = 2;
   static const state_unknown = 3;
 
+  final stateToText = {
+    0: "Ok",
+    1: "Warning",
+    2: "Critical",
+    3: "Unkown",
+  };
+
   final borderColors = {
     0: Colors.green[800],
     1: Colors.orange,
@@ -54,6 +61,10 @@ abstract class IcingaObject {
     return this.getRawData('object_name');
   }
 
+  String getDisplayName() {
+    return this.getRawData('object_name');
+  }
+
   Icon getIcon() {
     return this.icons[this.getState()];
   }
@@ -64,6 +75,10 @@ abstract class IcingaObject {
 
   Color getBackgroundColor() {
     return this.backgroundColors[this.getState()];
+  }
+
+  String getStateText() {
+    return this.stateToText[this.getState()];
   }
 
   int getState() {

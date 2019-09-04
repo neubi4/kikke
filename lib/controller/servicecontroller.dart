@@ -135,4 +135,10 @@ class ServiceController implements IcingaObjectController {
     var m = new Collection<Service>(l);
     return m.orderBy((service) => int.parse(service.getData('state')) * -1).thenBy((service) => service.getName().toLowerCase()).thenBy((service) => service.getData('last_state_change')).toCollection();
   }
+
+  Collection<Service> getWithStatus(Host host, String state){
+    var m = this.getAllForHost(host);
+
+    return m.where((service) => service.getData('state') == state).toCollection();
+  }
 }

@@ -8,6 +8,13 @@ class Host with IcingaObject {
 
   HostController controller;
 
+  final stateToText = {
+    0: "Up",
+    1: "Up",
+    2: "Down",
+    3: "Down",
+  };
+
   final String fieldPrefix = 'host';
 
   Host({this.name, this.data, this.controller});
@@ -26,6 +33,10 @@ class Host with IcingaObject {
   }
 
   String getName() {
+    return "${this.name}";
+  }
+
+  String getDisplayName() {
     if (this.getData('display_name') != null) {
       return "${this.getData('display_name')}";
     }

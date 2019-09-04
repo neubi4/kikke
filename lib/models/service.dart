@@ -29,9 +29,13 @@ class Service with IcingaObject {
   }
 
   String getName() {
+    return this.getData('description');
+  }
+
+  String getDisplayName() {
     if (this.getData('display_name') != null) {
-      return "${this.host.getName()}: ${this.getData('display_name')}";
+      return this.getData('display_name');
     }
-    return "${this.host.getName()}: ${this.getData('description')}";
+    return this.getData('description');
   }
 }

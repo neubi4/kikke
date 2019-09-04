@@ -18,7 +18,6 @@ class ListRow extends StatelessWidget {
       child: new ListTile(
         title: Text(this.getName()),
         subtitle: Text(this.iobject.getData(this.iobject.outputField)),
-        //leading: snapshot.data[index].getIcon(),
         onTap: () {
           clicked(this.iobject);
         },
@@ -27,7 +26,7 @@ class ListRow extends StatelessWidget {
   }
 
   String getName() {
-    return this.iobject.getName();
+    return this.iobject.getDisplayName();
   }
 }
 
