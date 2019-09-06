@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobilemon/time/timeago.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:mobilemon/controller/appsettings.dart';
 import 'package:mobilemon/controller/icingacontroller.dart';
 import 'package:mobilemon/models/icingaobject.dart';
@@ -29,6 +31,9 @@ void main() async {
   getIt.registerSingleton<AppSettings>(appSettings);
   getIt.registerSingleton<ServiceController>(serviceController);
   getIt.registerSingleton<HostController>(hostController);
+
+  timeago.setLocaleMessages('en', EnMessages());
+  timeago.setLocaleMessages('de', DeMessages());
 
   runApp(MaterialApp(
     // Start the app with the "/" named route. In our case, the app will start

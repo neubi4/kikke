@@ -50,7 +50,7 @@ abstract class IcingaObject {
     if (this.data.containsKey(key)) {
       return this.data[key];
     }
-    return null;
+    return "";
   }
 
   String getData(String key) {
@@ -85,10 +85,14 @@ abstract class IcingaObject {
     return int.parse(this.getData(this.stateField));
   }
 
-  String getStateSince() {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getData(this.lastStateChangeField)) * 1000);
+  String getDateFieldSince(String field) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(double.parse(this.getData(field)).toInt() * 1000);
 
-    return timeago.format(date);
+    return timeago.format(date, allowFromNow: true);
+  }
+
+  String getStateSince() {
+    return this.getDateFieldSince(this.lastStateChangeField);
   }
 
   String getStateSinceDate() {

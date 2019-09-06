@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
@@ -45,10 +47,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
             Divider(
               height: 0.0,
             ),
-            ListTile(
-              title: Text(iobject.getData(iobject.outputField)),
-              subtitle: Text(iobject.getData('check_command')),
-            ),
+            IcingaCheckListTile(iobject: iobject),
           ],
         ),
       )
@@ -147,6 +146,52 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
             ),
           )
       ),
+    );
+  }
+}
+
+class IcingaCheckListTile extends StatefulWidget {
+  const IcingaCheckListTile({
+    Key key,
+    @required this.iobject,
+  }): super(key: key);
+
+  final IcingaObject iobject;
+
+  @override
+  createState() => new IcingaCheckListTileState();
+}
+
+class IcingaCheckListTileState extends State<IcingaCheckListTile> {
+  Timer timer;
+
+  String getNextCheck() {
+    return "Next check ${widget.iobject.getDateFieldSince('next_update')}";
+  }
+
+  @override
+  void deactivate() {
+    timer.cancel();
+    super.deactivate();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (this.timer == null || !this.timer.isActive) {
+      this.timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+        if (timer.isActive && this.mounted) {
+          setState(() {
+
+          });
+        } else {
+          this.timer.cancel();
+        }
+      });
+    }
+
+    return ListTile(
+      title: Text(widget.iobject.getData(widget.iobject.outputField)),
+      subtitle: (widget.iobject.getData('next_update') == "") ? Text(widget.iobject.getData('check_command')) : Text(this.getNextCheck()),
     );
   }
 }
