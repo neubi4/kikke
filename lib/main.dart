@@ -15,6 +15,8 @@ import 'package:mobilemon/controller/service_locator.dart';
 
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   AppSettings appSettings = new AppSettings();
   await appSettings.loadData();
 

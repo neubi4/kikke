@@ -1,7 +1,8 @@
 import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/models/icingaobject.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
-import 'package:mobilemon/models/host.dart';
+
+import 'host.dart';
+import 'icingaobject.dart';
 
 class Service with IcingaObject {
   Host host;

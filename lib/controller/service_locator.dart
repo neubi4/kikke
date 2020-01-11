@@ -1,3 +1,3 @@
 import 'package:get_it/get_it.dart';
 
-GetIt getIt = new GetIt();
+GetIt getIt = GetIt.instance;
