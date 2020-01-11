@@ -1,4 +1,4 @@
-package com.example.mobilemon
+package net.slashserver.mobilemon
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
