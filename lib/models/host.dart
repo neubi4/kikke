@@ -1,4 +1,4 @@
-import 'package:mobilemon/controller/hostcontroller.dart';
+import 'package:mobilemon/models/icingainstance.dart';
 import 'package:mobilemon/models/icingaobject.dart';
 
 class Host with IcingaObject {
@@ -6,7 +6,7 @@ class Host with IcingaObject {
   String address;
   Map<String, dynamic> data;
 
-  HostController controller;
+  IcingaInstance instance;
 
   final stateToText = {
     0: "Up",
@@ -17,13 +17,13 @@ class Host with IcingaObject {
 
   final String fieldPrefix = 'host';
 
-  Host({this.name, this.data, this.controller});
+  Host({this.name, this.data, this.instance});
 
-  factory Host.fromJson(Map<String, dynamic> json, HostController controller) {
+  factory Host.fromJson(Map<String, dynamic> json, IcingaInstance instance) {
     return Host(
       name: json['host_name'],
       data: json,
-      controller: controller,
+      instance: instance,
     );
   }
 

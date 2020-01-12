@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/appsettings.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
+import 'package:mobilemon/controller/instancecontroller.dart';
 import 'package:mobilemon/controller/service_locator.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
+import 'package:mobilemon/models/icingainstance.dart';
 
 class LoginData {
   String url;
@@ -34,13 +36,11 @@ class LoginData {
       await this.settings.checkData(this.url, this.username, this.password);
       await this.settings.saveData(this.url, this.username, this.password);
 
-      ServiceController serviceController = getIt.get<ServiceController>();
-      HostController hostController = getIt.get<HostController>();
+      InstanceController controller = getIt.get<InstanceController>();
+      controller.reset();
 
-      serviceController.reset();
-      hostController.reset();
-
-      await serviceController.checkUpdate();
+      IcingaInstance instance = new IcingaInstance('zed', this.url, this.username, this.password);
+      controller.addInstance(instance);
 
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.pushNamed(context, '/');

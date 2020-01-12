@@ -1,27 +1,24 @@
-import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/controller/servicecontroller.dart';
+import 'package:mobilemon/models/icingainstance.dart';
 
 import 'host.dart';
 import 'icingaobject.dart';
 
 class Service with IcingaObject {
   Host host;
-  HostController hostController;
-  ServiceController serviceController;
+  IcingaInstance instance;
 
   Map<String, dynamic> data;
 
   final String fieldPrefix = 'service';
 
-  Service({this.data, this.host, this.serviceController});
+  Service({this.data, this.host, this.instance});
 
-  factory Service.fromJson(Map<String, dynamic> json, Host host, ServiceController serviceController) {
+  factory Service.fromJson(Map<String, dynamic> json, Host host, IcingaInstance instance) {
     Service service = Service(
       data: json,
       host: host,
-      serviceController: serviceController,
+      instance: instance,
     );
-    service.hostController = host.controller;
     return service;
   }
 

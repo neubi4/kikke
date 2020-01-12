@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/hostcontroller.dart';
+import 'package:mobilemon/controller/instancecontroller.dart';
 import 'package:mobilemon/controller/service_locator.dart';
 import 'package:mobilemon/controller/servicecontroller.dart';
 import 'package:mobilemon/models/host.dart';
@@ -24,6 +25,7 @@ class IcingaDetailView extends StatefulWidget {
 }
 
 class IcingaDetailViewState extends State<IcingaDetailView> {
+  InstanceController controller;
   ServiceController serviceController = getIt.get<ServiceController>();
   HostController hostController = getIt.get<HostController>();
 
@@ -54,6 +56,23 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     ];
   }
 
+  Widget showInstance(IcingaObject iobject) {
+    if (iobject is Service) {
+      return null;
+    }
+    return SizedBox(
+      width: 50,
+      child: AutoSizeText(
+        iobject.getInstanceName(),
+        maxLines: 1,
+        overflow: TextOverflow.clip,
+        style: TextStyle(color: Colors.black.withOpacity(0.4)),
+        maxFontSize: 12,
+        textAlign: TextAlign.right,
+      ),
+    );
+  }
+
   Container icingaObjectHeaderListTile(IcingaObject iobject) {
     return Container(
       decoration: new BoxDecoration(
@@ -69,6 +88,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
           title: Text(iobject.getDisplayName(),
               style: TextStyle(fontWeight: FontWeight.w500)),
           subtitle: Text(iobject.getName()),
+          trailing: this.showInstance(iobject),
           leading: Container(
             width: 50.0,
             child: Column(

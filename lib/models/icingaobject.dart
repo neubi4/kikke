@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import 'icingainstance.dart';
+
 
 abstract class IcingaObject {
   String name;
   Map<String, dynamic> data;
+
+  IcingaInstance instance;
 
   final String fieldPrefix = '';
   final String stateField = 'state';
@@ -99,5 +103,9 @@ abstract class IcingaObject {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getData(this.lastStateChangeField)) * 1000);
 
     return "${DateFormat.yMMMd().format(date)} ${DateFormat.Hms().format(date)}";
+  }
+
+  String getInstanceName() {
+    return this.instance.name;
   }
 }

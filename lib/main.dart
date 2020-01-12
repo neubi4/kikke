@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobilemon/controller/instancecontroller.dart';
+import 'package:mobilemon/models/icingainstance.dart';
 import 'package:mobilemon/time/timeago.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:mobilemon/controller/appsettings.dart';
@@ -25,11 +27,14 @@ void main() async {
     initRoute = '/settings';
   }
 
-  ServiceController serviceController = new ServiceController(appSettings: appSettings);
-  HostController hostController = new HostController(appSettings: appSettings, serviceController: serviceController);
+  IcingaInstance instance = new IcingaInstance('zed', appSettings.icingaUrl, appSettings.username, appSettings.password);
+  InstanceController controller = new InstanceController();
+  controller.addInstance(instance);
 
-  serviceController.setHostController(hostController);
+  ServiceController serviceController = new ServiceController(controller: controller);
+  HostController hostController = new HostController(controller: controller);
 
+  getIt.registerSingleton<InstanceController>(controller);
   getIt.registerSingleton<AppSettings>(appSettings);
   getIt.registerSingleton<ServiceController>(serviceController);
   getIt.registerSingleton<HostController>(hostController);
