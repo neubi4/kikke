@@ -69,6 +69,10 @@ abstract class IcingaObject {
     return this.getRawData('object_name');
   }
 
+  String getAllNames() {
+    return "${this.getData('display_name')} ${this.getData('description')} ${this.getData('display_name')} ${this.getData('object_name')} ";
+  }
+
   Icon getIcon() {
     return this.icons[this.getState()];
   }
@@ -87,6 +91,24 @@ abstract class IcingaObject {
 
   int getState() {
     return int.parse(this.getData(this.stateField));
+  }
+
+  int getWeight() {
+    int weight = 0;
+
+    switch (this.getState()) {
+      case 1:
+        weight = 40;
+        break;
+      case 2:
+        weight = 50;
+        break;
+      case 3:
+        weight = 30;
+        break;
+    }
+
+    return weight;
   }
 
   String getDateFieldSince(String field) {

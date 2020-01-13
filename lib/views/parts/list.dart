@@ -12,7 +12,7 @@ class ListRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
       decoration: new BoxDecoration(
-        color: this.iobject.getBackgroundColor(),
+        color: this.iobject.getData('acknowledged') == "0" ? this.iobject.getBackgroundColor() : null,
         border: Border(
           left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
         ),

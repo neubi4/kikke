@@ -60,4 +60,22 @@ class HostController implements IcingaObjectController {
         .thenBy((host) => host.getData('last_state_change'))
         .toCollection();
   }
+
+  Future<Collection<Host>> getAllSearch(String search) async {
+    search = search.toLowerCase();
+    List<Host> l = new List();
+    this.controller.instances.forEach((instance) {
+      instance.hosts.forEach((name, host) {
+        if (host.getAllNames().toLowerCase().contains(search)) {
+          l.add(host);
+        }
+      });
+    });
+
+    var m = new Collection<Host>(l);
+    return m
+        .orderBy((service) => int.parse(service.getData('state')) * -1)
+        .thenBy((service) => service.getData('last_state_change'))
+        .toCollection();
+  }
 }

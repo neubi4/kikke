@@ -87,7 +87,7 @@ class MobileMonHomepage extends StatelessWidget {
   }
 }
 
-class MobileMonList extends StatelessWidget {
+class MobileMonList extends StatefulWidget {
   const MobileMonList({
     Key key,
     @required this.controller,
@@ -98,14 +98,73 @@ class MobileMonList extends StatelessWidget {
   final String title;
 
   @override
+  createState() => new MobileMonListState();
+}
+
+class MobileMonListState extends State<MobileMonList> {
+  final TextEditingController _filter = new TextEditingController();
+  String searchText = "";
+  Icon searchIcon = Icon(Icons.search, color: Colors.white);
+  Widget appBarText;
+
+  MobileMonListState() {
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          searchText = "";
+        });
+      } else {
+        setState(() {
+          searchText = _filter.text;
+        });
+      }
+    });
+  }
+
+  Widget buildAppBar() {
+    return AppBar(
+      title: this.appBarText,
+      actions: <Widget>[
+        new IconButton(icon: this.searchIcon, onPressed: searchPressed),
+      ],
+    );
+  }
+
+  void searchPressed() {
+    setState(() {
+      if (this.searchIcon.icon == Icons.search) {
+        this.searchIcon = new Icon(Icons.close, color: Colors.white);
+        this.appBarText = new TextField(
+          controller: _filter,
+          style: TextStyle(color: Colors.white, fontSize: 18.0),
+          autofocus: true,
+          decoration: new InputDecoration(
+            prefixIcon: new Icon(Icons.search, color: Colors.white,),
+            hintText: 'Search...',
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white),
+          ),
+        );
+      } else {
+        this._filter.text = "";
+        this.searchText = "";
+        this.searchIcon = new Icon(Icons.search, color: Colors.white);
+        this.appBarText = null;
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (this.appBarText == null) {
+      this.appBarText = Text(widget.title);
+    }
+
     return  new Scaffold(
-      appBar: new AppBar(
-        title: new Text(this.title),
-      ),
+      appBar: this.buildAppBar(),
       body: new Center(
-        child: IcingaObjectListView(controller: this.controller, listAll: true,)
-        ),
+          child: IcingaObjectListView(controller: widget.controller, listAll: true, search: this.searchText,)
+      ),
       drawer: DrawerMenu(),
     );
   }

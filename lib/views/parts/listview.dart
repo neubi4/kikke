@@ -9,10 +9,12 @@ class IcingaObjectListView extends StatefulWidget {
     Key key,
     @required this.controller,
     this.listAll = false,
+    this.search = "",
   }): super(key: key);
 
   final IcingaObjectController controller;
   final bool listAll;
+  final String search;
 
   @override
   createState() => new IcingaObjectListViewState();
@@ -29,10 +31,49 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
     Navigator.pushNamed(context, '/detail', arguments: iobject);
   }
 
+  Future getListFuture() {
+    if (widget.listAll) {
+      if (widget.search == "") {
+        return widget.controller.getAll();
+      } else {
+        return widget.controller.getAllSearch(widget.search);
+      }
+    } else {
+      return widget.controller.getAllWithProblems();
+    }
+  }
+
+  Widget getEmptyList() {
+    if (widget.search != "") {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Icon(
+            Icons.warning,
+            color: Colors.blue[500],
+            size: 50,
+          ),
+          new Text("Nothing Found!"),
+        ],
+      );
+    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        new Icon(
+          Icons.check,
+          color: Colors.green[800],
+          size: 50,
+        ),
+        new Text("Liste leer!"),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Collection<IcingaObject>>(
-      future: widget.listAll ? widget.controller.getAll() : widget.controller.getAllWithProblems(),
+      future: this.getListFuture(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.length == 0) {
@@ -40,17 +81,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
               onTap: () {
                 _refresh();
               },
-              child: new Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new Icon(
-                    Icons.check,
-                    color: Colors.green[800],
-                    size: 50,
-                  ),
-                  new Text("Liste leer!"),
-                ],
-              ),
+              child: this.getEmptyList(),
             );
           }
           return RefreshIndicator(

@@ -18,7 +18,7 @@ class ServiceController implements IcingaObjectController {
 
     await Future.wait(futures);
   }
-  
+
   Future<void> checkUpdate() async {
     List<Future> futures = [];
     this.controller.instances.forEach((instance) {
@@ -66,8 +66,10 @@ class ServiceController implements IcingaObjectController {
     var m = new Collection<Service>(l);
     return m
         .where((service) => service.getData('state') != "0")
-        .orderBy((service) => int.parse(service.getData('state')) * -1)
-        .thenBy((service) => service.getData('last_state_change'))
+        .orderBy((service) => int.parse(service.getData('acknowledged')) * 1)
+        .thenBy((service) => service.getWeight() * -1)
+        .thenBy(
+            (service) => int.parse(service.getData('last_state_change')) * -1)
         .toCollection();
   }
 
@@ -80,9 +82,10 @@ class ServiceController implements IcingaObjectController {
 
     var m = new Collection<Service>(l);
     return m
-        .orderBy((service) => int.parse(service.getData('state')) * -1)
-        .thenBy((service) => service.getName().toLowerCase())
-        .thenBy((service) => service.getData('last_state_change'))
+        .orderBy((service) => service.getWeight() * -1)
+        .thenBy((service) => int.parse(service.getData('acknowledged')) * 1)
+        .thenBy(
+            (service) => int.parse(service.getData('last_state_change')) * -1)
         .toCollection();
   }
 
@@ -91,6 +94,25 @@ class ServiceController implements IcingaObjectController {
 
     return m
         .where((service) => service.getData('state') == state)
+        .toCollection();
+  }
+
+  Future<Collection<Service>> getAllSearch(String search) async {
+    search = search.toLowerCase();
+    List<Service> l = new List();
+    this.controller.instances.forEach((instance) {
+      instance.services.forEach((name, service) {
+        if (service.getAllNames().toLowerCase().contains(search) ||
+            service.host.getAllNames().toLowerCase().contains(search)) {
+          l.add(service);
+        }
+      });
+    });
+
+    var m = new Collection<Service>(l);
+    return m
+        .orderBy((service) => int.parse(service.getData('state')) * -1)
+        .thenBy((service) => service.getData('last_state_change'))
         .toCollection();
   }
 }
