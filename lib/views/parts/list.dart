@@ -12,7 +12,7 @@ class ListRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
       decoration: new BoxDecoration(
-        color: this.iobject.getData('acknowledged') == "0" ? this.iobject.getBackgroundColor() : null,
+        color: this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor() : null,
         border: Border(
           left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
         ),
@@ -20,12 +20,20 @@ class ListRow extends StatelessWidget {
       child: new ListTile(
         title: this.getTitle(),
         subtitle: Text(this.iobject.getData(this.iobject.outputField)),
-        trailing: this.showInstance(),
+        trailing: this.showStatus(),
         onTap: () {
           clicked(this.iobject);
         },
       ),
     );
+  }
+
+  Widget showStatus() {
+    if (this.iobject.getData('acknowledged') == "1") {
+      return Icon(Icons.check, color: Colors.green, size: 17.0);
+    } else if (this.iobject.getData('in_downtime') == "1") {
+      return Icon(Icons.access_time, color: Colors.black45, size: 17.0);
+    }
   }
 
   Widget showInstance() {

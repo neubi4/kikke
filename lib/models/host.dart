@@ -10,7 +10,7 @@ class Host with IcingaObject {
 
   final stateToText = {
     0: "Up",
-    1: "Up",
+    1: "Down",
     2: "Down",
     3: "Down",
   };

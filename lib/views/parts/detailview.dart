@@ -50,6 +50,20 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               height: 0.0,
             ),
             IcingaCheckListTile(iobject: iobject),
+            Divider(
+              height: 0.0,
+            ),
+            ListTile(
+              title: Text(iobject.getData('check_command')),
+              subtitle: Text('Check Command'),
+            ),
+            Divider(
+              height: 0.0,
+            ),
+            ListTile(
+              title: Text(iobject.getStateSinceDate()),
+              subtitle: Text('Last state Change'),
+            ),
           ],
         ),
       )
@@ -73,10 +87,18 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     );
   }
 
+  Widget showStatus(IcingaObject iobject) {
+    if (iobject.getData('acknowledged') == "1") {
+      return Icon(Icons.check, color: Colors.green, size: 17.0);
+    } else if (iobject.getData('in_downtime') == "1") {
+      return Icon(Icons.access_time, color: Colors.black45, size: 17.0);
+    }
+  }
+
   Container icingaObjectHeaderListTile(IcingaObject iobject) {
     return Container(
       decoration: new BoxDecoration(
-        color: iobject.getBackgroundColor(),
+        color: iobject.getData('handled') == "0" ? iobject.getBackgroundColor() : null,
         border: Border(
           left: BorderSide(width: 5, color: iobject.getBorderColor()),
         ),
@@ -88,7 +110,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
           title: Text(iobject.getDisplayName(),
               style: TextStyle(fontWeight: FontWeight.w500)),
           subtitle: Text(iobject.getName()),
-          trailing: this.showInstance(iobject),
+          trailing: this.showStatus(iobject),
           leading: Container(
             width: 50.0,
             child: Column(

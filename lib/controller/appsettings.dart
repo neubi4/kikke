@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:mobilemon/models/icingainstance.dart';
+import 'package:mobilemon/models/instancesettings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,9 +10,13 @@ class AppSettings {
   String username;
   String password;
 
+  InstanceSettings instances;
+
   static const String field_url = 'url';
   static const String field_username = 'username';
   static const String field_password = 'password';
+
+  static const String field_instances = 'instances';
 
   Future loadData() async {
     if (this.icingaUrl == null && this.username == null && this.password == null) {
@@ -23,6 +29,13 @@ class AppSettings {
     this.icingaUrl = prefs.getString(AppSettings.field_url);
     this.username= prefs.getString(AppSettings.field_username);
     this.password = prefs.getString(AppSettings.field_password);
+
+    String jsonString = prefs.getString(AppSettings.field_instances);
+    if (jsonString == null) {
+      jsonString = "[]";
+    }
+    List<dynamic> json = jsonDecode(jsonString);
+    this.instances = InstanceSettings.fromJson(json);
   }
 
   Future<String> getAuthData() async {
@@ -42,7 +55,7 @@ class AppSettings {
     return url;
   }
 
-  Future saveData(String url, String username, String password) async {
+  Future saveData(String name, String url, String username, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(AppSettings.field_url, url);
     prefs.setString(AppSettings.field_username, username);
@@ -51,6 +64,39 @@ class AppSettings {
     this.icingaUrl = url;
     this.username = username;
     this.password = password;
+
+
+    InstanceSetting i = InstanceSetting(name, url, username, password);
+    InstanceSetting alreadyInList = this.getByName(name);
+    if (alreadyInList != null) {
+      this.instances.instances.remove(alreadyInList);
+    }
+    this.instances.instances.add(i);
+
+    this.save();
+  }
+
+  InstanceSetting getByName(String name) {
+    InstanceSetting i;
+    this.instances.instances.forEach((instance) {
+      if (instance.name == name) {
+        i = instance;
+      }
+    });
+
+    return i;
+  }
+
+  Future save() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String jsonString = jsonEncode(this.instances);
+    prefs.setString(AppSettings.field_instances, jsonString);
+    await this.loadDataFromProvider();
+  }
+
+  Future delete(InstanceSetting instance) async {
+    this.instances.instances.remove(instance);
+    await this.save();
   }
 
   Future checkData(String url, String username, String password) async {

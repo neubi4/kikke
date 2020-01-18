@@ -1,49 +1,41 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/appsettings.dart';
-import 'package:mobilemon/controller/hostcontroller.dart';
 import 'package:mobilemon/controller/instancecontroller.dart';
 import 'package:mobilemon/controller/service_locator.dart';
-import 'package:mobilemon/controller/servicecontroller.dart';
-import 'package:mobilemon/models/icingainstance.dart';
+import 'package:mobilemon/models/instancesettings.dart';
 
 class LoginData {
+  String name;
   String url;
   String username;
   String password;
 
+  InstanceSetting _instanceSetting;
+
   AppSettings settings;
 
-  LoginData() {
+  LoginData(InstanceSetting instanceSetting) {
     this.settings = getIt.get<AppSettings>();
-  }
-
-  Future<bool> loadFromSettings() async {
-    if (this.username == null && this.password == null && this.url == null) {
-      await this.settings.loadData();
-      this.url = this.settings.icingaUrl;
-      this.username = this.settings.username;
-      this.password = this.settings.password;
-    }
-
-    return true;
+    this._instanceSetting = instanceSetting;
   }
 
   Future save(BuildContext context) async {
     try {
-      await this.settings.checkData(this.url, this.username, this.password);
-      await this.settings.saveData(this.url, this.username, this.password);
+      await this.settings.checkData(this._instanceSetting.url,
+          this._instanceSetting.username, this._instanceSetting.password);
+      await this.settings.saveData(
+          this._instanceSetting.name,
+          this._instanceSetting.url,
+          this._instanceSetting.username,
+          this._instanceSetting.password);
 
       InstanceController controller = getIt.get<InstanceController>();
-      controller.reset();
-
-      IcingaInstance instance = new IcingaInstance('zed', this.url, this.username, this.password);
-      controller.addInstance(instance);
+      controller.loadFromInstances(this.settings.instances.instances);
 
       Navigator.of(context, rootNavigator: true).pop();
-      Navigator.pushNamed(context, '/');
+      Navigator.pop(context);
     } on Exception catch (error) {
       Navigator.of(context, rootNavigator: true).pop();
       showDialog(
@@ -53,8 +45,7 @@ class LoginData {
               title: Text('Error'),
               content: Text(error.toString()),
             );
-          }
-      );
+          });
     }
   }
 }
@@ -66,11 +57,19 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  LoginData _data = new LoginData();
+  LoginData _data;
+  InstanceSetting _instanceSetting = new InstanceSetting('', '', '', '');
 
-  String _validateUsername(String value) {
+  @protected
+  @mustCallSuper
+  void initState() {
+    super.initState();
+    this._data = LoginData(this._instanceSetting);
+  }
+
+  String _validateName(String value) {
     if (value.length < 3) {
-      return 'The URL must be at least 8 characters.';
+      return 'The Name must be at least 3 characters.';
     }
 
     return null;
@@ -93,36 +92,39 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future submit() async {
+    this._data._instanceSetting = this._instanceSetting;
     // First validate form.
     if (this._formKey.currentState.validate()) {
       _formKey.currentState.save(); // Save our form now.
 
       showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: Text('Speichert'),
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                ],
-              )
-            ],
-          );
-        }
-      );
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return SimpleDialog(
+              title: Text("Logging in"),
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                  ],
+                )
+              ],
+            );
+          });
 
       await _data.save(context);
     }
   }
 
   Widget buildForm(BuildContext context) {
-    final Size screenSize = MediaQuery
-        .of(context)
-        .size;
+    final Size screenSize = MediaQuery.of(context).size;
+
+    InstanceSetting setting = ModalRoute.of(context).settings.arguments;
+    if (setting != null) {
+      this._instanceSetting = setting;
+    }
 
     return new Scaffold(
       appBar: new AppBar(
@@ -135,40 +137,45 @@ class _SettingsPageState extends State<SettingsPage> {
             child: new ListView(
               children: <Widget>[
                 new TextFormField(
+                  keyboardType: TextInputType.text,
+                  decoration: new InputDecoration(
+                      hintText: 'Instance Name',
+                      labelText: 'Enter your Instnance Name'),
+                  initialValue: this._instanceSetting.name,
+                  validator: this._validateName,
+                  onSaved: (String value) {
+                    this._instanceSetting.name = value;
+                  },
+                ),
+                new TextFormField(
                   keyboardType: TextInputType.url,
                   // Use email input type for emails.
                   decoration: new InputDecoration(
                       hintText: 'https://your-icinga.com',
-                      labelText: 'Icingaweb2 URL'
-                  ),
-                  initialValue: _data.url,
+                      labelText: 'Icingaweb2 URL'),
+                  initialValue: this._instanceSetting.url,
                   validator: this._validateUrl,
                   onSaved: (String value) {
-                    this._data.url = value;
+                    this._instanceSetting.url = value;
                   },
                 ),
                 new TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  // Use email input type for emails.
+                  keyboardType: TextInputType.text,
                   decoration: new InputDecoration(
-                      hintText: 'Username',
-                      labelText: 'Enter your password'
-                  ),
-                  initialValue: _data.username,
-                  validator: this._validateUsername,
+                      hintText: 'Username', labelText: 'Enter your Username'),
+                  initialValue: this._instanceSetting.username,
+                  validator: this._validateName,
                   onSaved: (String value) {
-                    this._data.username = value;
+                    this._instanceSetting.username = value;
                   },
                 ),
                 new TextFormField(
                   obscureText: true, // Use secure text for passwords.
                   decoration: new InputDecoration(
-                      hintText: 'Password',
-                      labelText: 'Enter your password'
-                  ),
+                      hintText: 'Password', labelText: 'Enter your password'),
                   validator: this._validatePassword,
                   onSaved: (String value) {
-                    this._data.password = value;
+                    this._instanceSetting.password = value;
                   },
                 ),
                 new Container(
@@ -176,52 +183,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: new RaisedButton(
                     child: new Text(
                       'Login',
-                      style: new TextStyle(
-                          color: Colors.white
-                      ),
+                      style: new TextStyle(color: Colors.white),
                     ),
                     onPressed: this.submit,
                     color: Colors.blue,
                   ),
-                  margin: new EdgeInsets.only(
-                      top: 20.0
-                  ),
+                  margin: new EdgeInsets.only(top: 20.0),
                 )
               ],
             ),
-          )
-      ),
+          )),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<bool>(
-        future: _data.loadFromSettings(),
-        builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return this.buildForm(context);
-        } else if (snapshot.hasError) {
-          return new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 50,
-              ),
-              Text("${snapshot.error}"),
-            ],
-          );
-        }
-
-        return new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            CircularProgressIndicator(),
-          ],
-        );
-      }
-    );
+    return this.buildForm(context);
   }
 }

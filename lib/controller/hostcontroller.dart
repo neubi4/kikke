@@ -56,8 +56,10 @@ class HostController implements IcingaObjectController {
     var m = new Collection<Host>(l);
     return m
         .where((host) => host.getData('state') != "0")
-        .orderBy((host) => int.parse(host.getData('state')) * -1)
-        .thenBy((host) => host.getData('last_state_change'))
+        .orderBy((host) => int.parse(host.getData('handled')) * 1)
+        .thenBy((host) => host.getWeight() * -1)
+        .thenBy(
+            (host) => int.parse(host.getData('last_state_change')) * -1)
         .toCollection();
   }
 

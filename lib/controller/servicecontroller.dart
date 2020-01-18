@@ -66,7 +66,7 @@ class ServiceController implements IcingaObjectController {
     var m = new Collection<Service>(l);
     return m
         .where((service) => service.getData('state') != "0")
-        .orderBy((service) => int.parse(service.getData('acknowledged')) * 1)
+        .orderBy((service) => int.parse(service.getData('handled')) * 1)
         .thenBy((service) => service.getWeight() * -1)
         .thenBy(
             (service) => int.parse(service.getData('last_state_change')) * -1)

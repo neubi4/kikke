@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobilemon/controller/instancecontroller.dart';
 import 'package:mobilemon/models/icingainstance.dart';
+import 'package:mobilemon/screens/settings.dart';
 import 'package:mobilemon/time/timeago.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:mobilemon/controller/appsettings.dart';
@@ -20,16 +21,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   AppSettings appSettings = new AppSettings();
-  await appSettings.loadData();
+  await appSettings.loadDataFromProvider();
 
   var initRoute = '/';
-  if (appSettings.icingaUrl == null && appSettings.username == null && appSettings.password == null) {
+  if (appSettings.instances.instances.length < 1) {
     initRoute = '/settings';
   }
 
-  IcingaInstance instance = new IcingaInstance('zed', appSettings.icingaUrl, appSettings.username, appSettings.password);
-  InstanceController controller = new InstanceController();
-  controller.addInstance(instance);
+  InstanceController controller = new InstanceController.fromSettings(appSettings);
 
   ServiceController serviceController = new ServiceController(controller: controller);
   HostController hostController = new HostController(controller: controller);
@@ -52,7 +51,9 @@ void main() async {
       '/lists/hosts': (context) => MobileMonList(controller: getIt.get<HostController>(), title: "Hosts",),
       '/lists/services': (context) => MobileMonList(controller: getIt.get<ServiceController>(), title: "Services",),
       '/detail': (context) => MobileMonDetail(),
-      '/settings': (context) => SettingsPage(),
+      //'/settings': (context) => SettingsPage(),
+      '/settings': (context) => SettingsScreen(),
+      '/settings/account': (context) => SettingsPage(),
     },
     title: 'MobileMon',
   ));
@@ -105,7 +106,28 @@ class MobileMonListState extends State<MobileMonList> {
   final TextEditingController _filter = new TextEditingController();
   String searchText = "";
   Icon searchIcon = Icon(Icons.search, color: Colors.white);
+  Widget searchField;
   Widget appBarText;
+
+  @protected
+  @mustCallSuper
+  void initState() {
+    super.initState();
+    this.searchField =  Form(
+      child: new TextField(
+        controller: _filter,
+        style: TextStyle(color: Colors.white, fontSize: 18.0),
+        autofocus: true,
+        decoration: new InputDecoration(
+          prefixIcon: new Icon(Icons.search, color: Colors.white,),
+          hintText: 'Search...',
+          border: InputBorder.none,
+          hintStyle: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
 
   MobileMonListState() {
     _filter.addListener(() {
@@ -134,17 +156,7 @@ class MobileMonListState extends State<MobileMonList> {
     setState(() {
       if (this.searchIcon.icon == Icons.search) {
         this.searchIcon = new Icon(Icons.close, color: Colors.white);
-        this.appBarText = new TextField(
-          controller: _filter,
-          style: TextStyle(color: Colors.white, fontSize: 18.0),
-          autofocus: true,
-          decoration: new InputDecoration(
-            prefixIcon: new Icon(Icons.search, color: Colors.white,),
-            hintText: 'Search...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white),
-          ),
-        );
+        this.appBarText = this.searchField;
       } else {
         this._filter.text = "";
         this.searchText = "";
