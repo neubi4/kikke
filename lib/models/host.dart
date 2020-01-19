@@ -1,5 +1,5 @@
-import 'package:mobilemon/models/icingainstance.dart';
-import 'package:mobilemon/models/icingaobject.dart';
+import 'package:kikke/models/icingainstance.dart';
+import 'package:kikke/models/icingaobject.dart';
 
 class Host with IcingaObject {
   String name;

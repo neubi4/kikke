@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mobilemon/controller/instancecontroller.dart';
-import 'package:mobilemon/models/icingainstance.dart';
-import 'package:mobilemon/screens/settings.dart';
-import 'package:mobilemon/time/timeago.dart';
+import 'package:kikke/controller/instancecontroller.dart';
+import 'package:kikke/screens/settings.dart';
+import 'package:kikke/time/timeago.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:mobilemon/controller/appsettings.dart';
-import 'package:mobilemon/controller/icingacontroller.dart';
-import 'package:mobilemon/models/icingaobject.dart';
-import 'package:mobilemon/controller/servicecontroller.dart';
-import 'package:mobilemon/screens/drawermenu.dart';
-import 'package:mobilemon/screens/login.dart';
-import 'package:mobilemon/views/parts/detailview.dart';
-import 'package:mobilemon/views/parts/listview.dart';
+import 'package:kikke/controller/appsettings.dart';
+import 'package:kikke/controller/icingacontroller.dart';
+import 'package:kikke/models/icingaobject.dart';
+import 'package:kikke/controller/servicecontroller.dart';
+import 'package:kikke/screens/drawermenu.dart';
+import 'package:kikke/screens/login.dart';
+import 'package:kikke/views/parts/detailview.dart';
+import 'package:kikke/views/parts/listview.dart';
 
-import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/controller/service_locator.dart';
+import 'package:kikke/controller/hostcontroller.dart';
+import 'package:kikke/controller/service_locator.dart';
 
 
 void main() async {
@@ -47,19 +46,18 @@ void main() async {
     initialRoute: initRoute,
     routes: {
       // When we navigate to the "/" route, build the FirstScreen Widget
-      '/': (context) => MobileMonHomepage(),
-      '/lists/hosts': (context) => MobileMonList(controller: getIt.get<HostController>(), title: "Hosts",),
-      '/lists/services': (context) => MobileMonList(controller: getIt.get<ServiceController>(), title: "Services",),
-      '/detail': (context) => MobileMonDetail(),
-      //'/settings': (context) => SettingsPage(),
+      '/': (context) => AppHomePage(),
+      '/lists/hosts': (context) => AppListPage(controller: getIt.get<HostController>(), title: "Hosts",),
+      '/lists/services': (context) => AppListPage(controller: getIt.get<ServiceController>(), title: "Services",),
+      '/detail': (context) => AppDetailPage(),
       '/settings': (context) => SettingsScreen(),
       '/settings/account': (context) => SettingsPage(),
     },
-    title: 'MobileMon',
+    title: 'Kikke',
   ));
 }
 
-class MobileMonHomepage extends StatelessWidget {
+class AppHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -88,8 +86,8 @@ class MobileMonHomepage extends StatelessWidget {
   }
 }
 
-class MobileMonList extends StatefulWidget {
-  const MobileMonList({
+class AppListPage extends StatefulWidget {
+  const AppListPage({
     Key key,
     @required this.controller,
     @required this.title,
@@ -99,10 +97,10 @@ class MobileMonList extends StatefulWidget {
   final String title;
 
   @override
-  createState() => new MobileMonListState();
+  createState() => new AppListPageState();
 }
 
-class MobileMonListState extends State<MobileMonList> {
+class AppListPageState extends State<AppListPage> {
   final TextEditingController _filter = new TextEditingController();
   String searchText = "";
   Icon searchIcon = Icon(Icons.search, color: Colors.white);
@@ -129,7 +127,7 @@ class MobileMonListState extends State<MobileMonList> {
   }
 
 
-  MobileMonListState() {
+  AppListPageState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -182,16 +180,16 @@ class MobileMonListState extends State<MobileMonList> {
   }
 }
 
-class MobileMonDetail extends StatefulWidget {
-  const MobileMonDetail({
+class AppDetailPage extends StatefulWidget {
+  const AppDetailPage({
     Key key
   }): super(key: key);
 
   @override
-  createState() => new MobileMonDetailState();
+  createState() => new AppDetailPageState();
 }
 
-class MobileMonDetailState extends State<MobileMonDetail> {
+class AppDetailPageState extends State<AppDetailPage> {
   @override
   Widget build(BuildContext context) {
     IcingaObject iobject = ModalRoute.of(context).settings.arguments;

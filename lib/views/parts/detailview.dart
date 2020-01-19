@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:mobilemon/controller/hostcontroller.dart';
-import 'package:mobilemon/controller/instancecontroller.dart';
-import 'package:mobilemon/controller/service_locator.dart';
-import 'package:mobilemon/controller/servicecontroller.dart';
-import 'package:mobilemon/models/host.dart';
-import 'package:mobilemon/models/icingaobject.dart';
-import 'package:mobilemon/models/service.dart';
-import 'package:mobilemon/views/parts/list.dart';
+import 'package:kikke/controller/hostcontroller.dart';
+import 'package:kikke/controller/instancecontroller.dart';
+import 'package:kikke/controller/service_locator.dart';
+import 'package:kikke/controller/servicecontroller.dart';
+import 'package:kikke/models/host.dart';
+import 'package:kikke/models/icingaobject.dart';
+import 'package:kikke/models/service.dart';
+import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
 
 class IcingaDetailView extends StatefulWidget {
@@ -61,7 +61,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               height: 0.0,
             ),
             ListTile(
-              title: Text(iobject.getStateSinceDate()),
+              title: Text("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
+              isThreeLine: true,
               subtitle: Text('Last state Change'),
             ),
           ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobilemon/controller/appsettings.dart';
-import 'package:mobilemon/controller/service_locator.dart';
-import 'package:mobilemon/models/instancesettings.dart';
+import 'package:kikke/controller/appsettings.dart';
+import 'package:kikke/controller/service_locator.dart';
+import 'package:kikke/models/instancesettings.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override

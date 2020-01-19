@@ -1,4 +1,4 @@
-import 'package:mobilemon/models/icingainstance.dart';
+import 'package:kikke/models/icingainstance.dart';
 
 import 'host.dart';
 import 'icingaobject.dart';

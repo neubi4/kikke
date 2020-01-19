@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:mobilemon/models/service.dart';
+import 'package:kikke/models/service.dart';
 
 import 'host.dart';
 

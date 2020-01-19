@@ -1,4 +1,4 @@
-import 'package:mobilemon/models/icingaobject.dart';
+import 'package:kikke/models/icingaobject.dart';
 import 'package:queries/collections.dart';
 
 abstract class IcingaObjectController {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobilemon/controller/icingacontroller.dart';
-import 'package:mobilemon/models/icingaobject.dart';
-import 'package:mobilemon/views/parts/list.dart';
+import 'package:kikke/controller/icingacontroller.dart';
+import 'package:kikke/models/icingaobject.dart';
+import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
 
 class IcingaObjectListView extends StatefulWidget {

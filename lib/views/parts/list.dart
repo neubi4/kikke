@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:mobilemon/models/icingaobject.dart';
-import 'package:mobilemon/models/service.dart';
+import 'package:kikke/models/icingaobject.dart';
+import 'package:kikke/models/service.dart';
 
 class ListRow extends StatelessWidget {
   ListRow({Key key, this.iobject, this.clicked}): super(key: key);

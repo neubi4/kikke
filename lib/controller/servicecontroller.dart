@@ -1,7 +1,7 @@
-import 'package:mobilemon/controller/icingacontroller.dart';
-import 'package:mobilemon/controller/instancecontroller.dart';
-import 'package:mobilemon/models/host.dart';
-import 'package:mobilemon/models/service.dart';
+import 'package:kikke/controller/icingacontroller.dart';
+import 'package:kikke/controller/instancecontroller.dart';
+import 'package:kikke/models/host.dart';
+import 'package:kikke/models/service.dart';
 
 import 'package:queries/collections.dart';
 

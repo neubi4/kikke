@@ -13,10 +13,13 @@ class DrawerMenu extends StatelessWidget {
         // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Text('Drawer Header'),
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          Container(
+            height: 85.0,
+            child: DrawerHeader(
+              child: Text('Kikke', style: TextStyle(color: Colors.white),),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
             ),
           ),
           ListTile(

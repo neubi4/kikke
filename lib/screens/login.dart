@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mobilemon/controller/appsettings.dart';
-import 'package:mobilemon/controller/instancecontroller.dart';
-import 'package:mobilemon/controller/service_locator.dart';
-import 'package:mobilemon/models/instancesettings.dart';
+import 'package:kikke/controller/appsettings.dart';
+import 'package:kikke/controller/instancecontroller.dart';
+import 'package:kikke/controller/service_locator.dart';
+import 'package:kikke/models/instancesettings.dart';
 
 class LoginData {
   String name;
@@ -30,9 +30,6 @@ class LoginData {
           this._instanceSetting.url,
           this._instanceSetting.username,
           this._instanceSetting.password);
-
-      InstanceController controller = getIt.get<InstanceController>();
-      controller.loadFromInstances(this.settings.instances.instances);
 
       Navigator.of(context, rootNavigator: true).pop();
       Navigator.pop(context);

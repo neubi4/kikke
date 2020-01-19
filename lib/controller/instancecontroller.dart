@@ -1,6 +1,6 @@
-import 'package:mobilemon/controller/appsettings.dart';
-import 'package:mobilemon/models/icingainstance.dart';
-import 'package:mobilemon/models/instancesettings.dart';
+import 'package:kikke/controller/appsettings.dart';
+import 'package:kikke/models/icingainstance.dart';
+import 'package:kikke/models/instancesettings.dart';
 
 class InstanceController {
   List<IcingaInstance> instances = [];

@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:mobilemon/controller/icingacontroller.dart';
+import 'package:kikke/controller/icingacontroller.dart';
 
-import 'package:mobilemon/models/host.dart';
+import 'package:kikke/models/host.dart';
 import 'package:queries/collections.dart';
 
 import 'instancecontroller.dart';
