@@ -213,13 +213,15 @@ class IcingaCheckListTileState extends State<IcingaCheckListTile> {
 
   @override
   void deactivate() {
-    timer.cancel();
+    if (this.timer != null) {
+      this.timer.cancel();
+    }
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this.timer == null || !this.timer.isActive) {
+    if (widget.iobject.getData('next_update') != "" && (this.timer == null || !this.timer.isActive)) {
       this.timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
         if (timer.isActive && this.mounted) {
           setState(() {
