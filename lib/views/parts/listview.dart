@@ -86,11 +86,17 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
           }
           return RefreshIndicator(
             onRefresh: _refresh,
-            child: ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (context, index) {
-                return ListRow(iobject: snapshot.data[index], clicked: _handleClick);
-              },
+            child: Scrollbar(
+              child: ListView.separated(
+                separatorBuilder: (context, index) => Divider(
+                  height: 0.0,
+                ),
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return ListRow(iobject: snapshot.data[index], clicked: _handleClick);
+                },
+
+              ),
             ),
           );
         } else if (snapshot.hasError) {

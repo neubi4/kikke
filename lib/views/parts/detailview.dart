@@ -62,7 +62,6 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
             ),
             ListTile(
               title: Text("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
-              isThreeLine: true,
               subtitle: Text('Last state Change'),
             ),
           ],
@@ -157,6 +156,9 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
 
     for (var i = 0; i < services.length; i++) {
       l.add(ListRowNoHostname(iobject: services[i], clicked: _handleClick));
+      if (i < (services.length - 1)) {
+        l.add(Divider(height: 0.0,));
+      }
     }
 
     return [
@@ -180,12 +182,14 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
       onRefresh: _refresh,
       child: Scaffold(
           body: Container(
-            child: ListView(
-              children: <Widget>[
-                ...getDetails(context, widget.iobject),
-                if (widget.iobject is Host)
-                  ...getServices(context, widget.iobject),
-              ],
+            child: Scrollbar(
+              child: ListView(
+                children: <Widget>[
+                  ...getDetails(context, widget.iobject),
+                  if (widget.iobject is Host)
+                    ...getServices(context, widget.iobject),
+                ],
+              ),
             ),
           )
       ),

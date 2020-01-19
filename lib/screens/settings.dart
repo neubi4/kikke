@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:kikke/controller/appsettings.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
+import 'package:kikke/screens/drawermenu.dart';
+
+import 'drawermenu.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -50,40 +53,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: new AppBar(
         title: new Text("Settings"),
       ),
-      body: new Center(
-        child: Column(
-          children: <Widget>[
-            Card(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      "Accounts",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+      drawer: DrawerMenu(),
+      body: Scrollbar(
+        child: new Center(
+          child: Column(
+            children: <Widget>[
+              Card(
+                child: Column(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(
+                        "Accounts",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  Divider(
-                    height: 0.0,
-                  ),
-                  for (var i = 0; i < this.settings.instances.instances.length; i++)
-                    ...getAccounts(this.settings.instances.instances[i]),
-                  ListTile(
-                    title: Text(
-                      "Add Account",
+                    Divider(
+                      height: 0.0,
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(context, '/settings/account');
-                    },
-                  ),
-                  Divider(
-                    height: 0.0,
-                  ),
-                ],
+                    for (var i = 0; i < this.settings.instances.instances.length; i++)
+                      ...getAccounts(this.settings.instances.instances[i]),
+                    ListTile(
+                      title: Text(
+                        "Add Account",
+                      ),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/settings/account');
+                      },
+                    ),
+                    Divider(
+                      height: 0.0,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
