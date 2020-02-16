@@ -3,9 +3,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
     <item android:drawable="@android:color/white"/>
 
-    <item>
+    <item
+        android:width="120dp"
+        android:height="170dp"
+        android:gravity="center">
         <bitmap
-            android:gravity="center"
+            android:gravity="fill_horizontal|fill_vertical"
             android:src="@drawable/logo"  />
     </item>
 
