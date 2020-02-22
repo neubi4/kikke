@@ -10,7 +10,7 @@ class IcingaObjectListView extends StatefulWidget {
     @required this.controller,
     this.listAll = false,
     this.search = "",
-  }): super(key: key);
+  }) : super(key: key);
 
   final IcingaObjectController controller;
   final bool listAll;
@@ -93,9 +93,9 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
                 ),
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
-                  return ListRow(iobject: snapshot.data[index], clicked: _handleClick);
+                  return ListRow(
+                      iobject: snapshot.data[index], clicked: _handleClick);
                 },
-
               ),
             ),
           );

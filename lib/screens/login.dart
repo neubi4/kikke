@@ -41,6 +41,14 @@ class LoginData {
             return AlertDialog(
               title: Text('Error'),
               content: Text(error.toString()),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Ok"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
             );
           });
     }

@@ -38,7 +38,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
         onTap: () {
-          Navigator.pushNamed(context, '/settings/account', arguments: setting);
+          Navigator.pushNamed(context, '/settings/account', arguments: setting).then((value) {
+            setState(() {
+
+            });
+          });
         },
       ),
       Divider(
