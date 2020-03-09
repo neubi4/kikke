@@ -43,6 +43,13 @@ abstract class IcingaObject {
     3: Colors.deepPurple[50],
   };
 
+  final backgroundColorsDark = {
+    0: null,
+    1: null,
+    2: null,
+    3: null,
+  };
+
   final icons = {
     0: Icon(Icons.check, color: Colors.green[800]),
     1: Icon(Icons.error, color: Colors.orange),
@@ -81,8 +88,13 @@ abstract class IcingaObject {
     return this.borderColors[this.getState()];
   }
 
-  Color getBackgroundColor() {
-    return this.backgroundColors[this.getState()];
+  Color getBackgroundColor(BuildContext context) {
+    var colors = this.backgroundColors;
+    if (Theme.of(context).brightness == Brightness.dark) {
+      colors = this.backgroundColorsDark;
+    }
+
+    return colors[this.getState()];
   }
 
   String getStateText() {

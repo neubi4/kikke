@@ -39,9 +39,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/settings/account', arguments: setting).then((value) {
-            setState(() {
+            if (this.settings.instances.instances.length < 2) {
+              Navigator.popAndPushNamed(context, '/');
+            } else {
+              setState(() {
 
-            });
+              });
+            }
           });
         },
       ),
@@ -83,7 +87,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         "Add Account",
                       ),
                       onTap: () {
-                        Navigator.pushNamed(context, '/settings/account');
+                        Navigator.pushNamed(context, '/settings/account').then((value) {
+                          if (this.settings.instances.instances.length < 2) {
+                            Navigator.popAndPushNamed(context, '/');
+                          } else {
+                            setState(() {
+
+                            });
+                          }
+                        });
                       },
                     ),
                     Divider(

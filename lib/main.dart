@@ -43,6 +43,7 @@ void main() async {
   runApp(MaterialApp(
     // Start the app with the "/" named route. In our case, the app will start
     // on the FirstScreen Widget
+    darkTheme: ThemeData.dark(),
     initialRoute: initRoute,
     routes: {
       // When we navigate to the "/" route, build the FirstScreen Widget

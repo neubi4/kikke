@@ -8,11 +8,13 @@ class ListRow extends StatelessWidget {
 
   final IcingaObject iobject;
   final ValueChanged<IcingaObject> clicked;
+  BuildContext context;
 
   Widget build(BuildContext context) {
+    this.context = context;
     return new Container(
       decoration: new BoxDecoration(
-        color: this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor() : null,
+        color: this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor(context) : null,
         border: Border(
           left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
         ),
@@ -51,6 +53,10 @@ class ListRow extends StatelessWidget {
   }
 
   Widget getTitle() {
+    if (Theme.of(context).brightness == Brightness.dark)
+    {
+
+    }
     if (this.iobject is Service) {
       Service service = this.iobject;
       return RichText(
@@ -59,9 +65,9 @@ class ListRow extends StatelessWidget {
             color: Colors.black.withOpacity(0.8),
           ),
           children: <TextSpan>[
-            TextSpan(text: service.getDisplayName(), style: TextStyle(fontWeight: FontWeight.bold)),
-            TextSpan(text: " on "),
-            TextSpan(text: service.host.getDisplayName(), style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: service.getDisplayName(), style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyText1.color)),
+            TextSpan(text: " on ", style: TextStyle(color: Theme.of(context).textTheme.bodyText1.color)),
+            TextSpan(text: service.host.getDisplayName(), style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyText1.color)),
           ],
         ),
       );

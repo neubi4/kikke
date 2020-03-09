@@ -5,6 +5,7 @@ import 'package:kikke/controller/appsettings.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
+import 'package:uuid/uuid.dart';
 
 class LoginData {
   String name;
@@ -26,6 +27,7 @@ class LoginData {
       await this.settings.checkData(this._instanceSetting.url,
           this._instanceSetting.username, this._instanceSetting.password);
       await this.settings.saveData(
+          this._instanceSetting.id,
           this._instanceSetting.name,
           this._instanceSetting.url,
           this._instanceSetting.username,
@@ -63,7 +65,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   LoginData _data;
-  InstanceSetting _instanceSetting = new InstanceSetting('', '', '', '');
+  InstanceSetting _instanceSetting = new InstanceSetting(Uuid().v4(), '', '', '', '');
 
   @protected
   @mustCallSuper
@@ -179,6 +181,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   decoration: new InputDecoration(
                       hintText: 'Password', labelText: 'Enter your password'),
                   validator: this._validatePassword,
+                  initialValue: this._instanceSetting.password,
                   onSaved: (String value) {
                     this._instanceSetting.password = value;
                   },

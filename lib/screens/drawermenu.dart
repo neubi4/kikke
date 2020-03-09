@@ -14,7 +14,7 @@ class DrawerMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           Container(
-            height: 85.0,
+            height: 75,
             child: DrawerHeader(
               child: Text('Kikke', style: TextStyle(color: Colors.white),),
               decoration: BoxDecoration(

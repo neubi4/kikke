@@ -98,7 +98,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   Container icingaObjectHeaderListTile(IcingaObject iobject) {
     return Container(
       decoration: new BoxDecoration(
-        color: iobject.getData('handled') == "0" ? iobject.getBackgroundColor() : null,
+        color: iobject.getData('handled') == "0" ? iobject.getBackgroundColor(context) : null,
         border: Border(
           left: BorderSide(width: 5, color: iobject.getBorderColor()),
         ),

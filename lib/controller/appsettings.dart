@@ -24,15 +24,26 @@ class AppSettings {
     this.instances = InstanceSettings.fromJson(json);
   }
 
-  Future saveData(String name, String url, String username, String password) async {
-    InstanceSetting i = InstanceSetting(name, url, username, password);
-    InstanceSetting alreadyInList = this.getByName(name);
+  Future saveData(String id, String name, String url, String username, String password) async {
+    InstanceSetting i = InstanceSetting(id, name, url, username, password);
+    InstanceSetting alreadyInList = this.getById(id);
     if (alreadyInList != null) {
       this.instances.instances.remove(alreadyInList);
     }
     this.instances.instances.add(i);
 
     this.save();
+  }
+
+  InstanceSetting getById(String id) {
+    InstanceSetting i;
+    this.instances.instances.forEach((instance) {
+      if (instance.id == id) {
+        i = instance;
+      }
+    });
+
+    return i;
   }
 
   InstanceSetting getByName(String name) {
