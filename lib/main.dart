@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:kikke/app_state.dart';
 import 'package:kikke/controller/instancecontroller.dart';
@@ -35,7 +33,7 @@ void main() async {
 
   ServiceController serviceController = new ServiceController(controller: controller);
   HostController hostController = new HostController(controller: controller);
-  
+
   getIt.registerSingleton<InstanceController>(controller);
   getIt.registerSingleton<AppSettings>(appSettings);
   getIt.registerSingleton<ServiceController>(serviceController);
@@ -64,7 +62,10 @@ class KikkeApp extends StatelessWidget {
         return MaterialApp(
           // Start the app with the "/" named route. In our case, the app will start
           // on the FirstScreen Widget
-          darkTheme: ThemeData.dark(),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            accentColor: Colors.purpleAccent,
+          ),
           themeMode: appState.themeMode,
           initialRoute: initRoute,
           routes: {
