@@ -50,6 +50,13 @@ class DrawerMenu extends StatelessWidget {
               Navigator.popAndPushNamed(context, '/settings');
             },
           ),
+          ListTile(
+            title: Text('Imprint'),
+            selected: ModalRoute.of(context).settings.name == '/imprint' ,
+            onTap: () {
+              Navigator.popAndPushNamed(context, '/imprint');
+            },
+          ),
         ],
       ),
     );

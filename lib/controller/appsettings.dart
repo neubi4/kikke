@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
-import 'package:http/http.dart' as http;
 
 import 'instancecontroller.dart';
 
@@ -82,11 +81,17 @@ class AppSettings {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    final response = await http.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', headers: headers);
+    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
+      headers: headers,
+      responseType: dio.ResponseType.plain,
+      sendTimeout: 3000,
+      receiveTimeout: 60000,
+    ));
+
     if (response.statusCode == 401) {
       throw Exception('Status Code 401 Unauthorized!');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to load, ${response.statusCode} ${response.request.method} ${response.request.url}');
+      throw Exception('Failed to load, ${response.statusCode} ${response.request.method} ${response.request.uri}');
     }
   }
 }

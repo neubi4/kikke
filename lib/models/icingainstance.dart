@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
 import 'package:kikke/models/service.dart';
 
 import 'host.dart';
@@ -44,11 +44,17 @@ class IcingaInstance {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    final response = await http.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', headers: headers);
+    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
+      headers: headers,
+      responseType: dio.ResponseType.plain,
+      sendTimeout: 3000,
+      receiveTimeout: 60000,
+    ));
+
     if (response.statusCode == 401) {
       throw Exception('Status Code 401 Unauthorized!');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to load, ${response.statusCode} ${response.request.method} ${response.request.url}');
+      throw Exception('Failed to load, ${response.statusCode} ${response.request.method} ${response.request.uri}');
     }
   }
 
@@ -69,9 +75,15 @@ class IcingaInstance {
 
     String icingaUrl = this.getUrl();
 
-    final response = await http.get('${icingaUrl}monitoring/list/services?format=json&limit=10000', headers: headers);
+    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/services?format=json&limit=10000', options: dio.Options(
+      headers: headers,
+      responseType: dio.ResponseType.plain,
+      sendTimeout: 3000,
+      receiveTimeout: 60000,
+    ));
+
     if (response.statusCode == 200) {
-      var jsonData = (json.decode(response.body) as List);
+      var jsonData = (json.decode(response.data) as List);
 
       for (var i = 0; i < jsonData.length; i++) {
         await this.parseServiceRow(jsonData[i]);
@@ -80,7 +92,7 @@ class IcingaInstance {
       this.fetchedAllServices = true;
     } else {
       // If that call was not successful, throw an error.
-      throw Exception('Failed to load services, ${response.request.method} ${response.request.url} ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load services, ${response.request.method} ${response.request.uri} ${response.statusCode} ${response.data}');
     }
   }
 
@@ -102,10 +114,15 @@ class IcingaInstance {
 
     String icingaUrl = this.getUrl();
 
-    final response = await http.get('${icingaUrl}monitoring/list/hosts?limit=10000&format=json', headers: headers);
+    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=10000&format=json', options: dio.Options(
+      headers: headers,
+      responseType: dio.ResponseType.plain,
+      sendTimeout: 3000,
+      receiveTimeout: 60000,
+    ));
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      var jsonData = json.decode(response.data);
 
       jsonData.forEach((item) {
         if (this.hosts.containsKey(item['host_name'])) {
@@ -118,7 +135,7 @@ class IcingaInstance {
       });
     } else {
       // If that call was not successful, throw an error.
-      throw Exception('Failed to load host, ${response.request.method} ${response.request.url} ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load host, ${response.request.method} ${response.request.uri} ${response.statusCode} ${response.data}');
     }
   }
 
