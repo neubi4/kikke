@@ -4,7 +4,9 @@ import 'package:kikke/controller/appsettings.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
 import 'package:kikke/screens/drawermenu.dart';
+import 'package:provider/provider.dart';
 
+import '../app_state.dart';
 import 'drawermenu.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -57,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = Provider.of<AppState>(context);
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("Settings"),
@@ -97,6 +100,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           }
                         });
                       },
+                    ),
+                    Divider(
+                      height: 0.0,
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                child: Column(
+                  children: <Widget>[
+                    ListTile(
+                      title: Text(
+                        "Settings",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      height: 0.0,
+                    ),
+                    ListTile(
+                      title: Text("Dark Mode"),
+                      trailing: DropdownButton(
+                        value: this.settings.themeMode,
+                        items: [
+                          DropdownMenuItem(
+                            child: Text("System"),
+                            value: ThemeMode.system,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Dark"),
+                            value: ThemeMode.dark,
+                          ),
+                          DropdownMenuItem(
+                            child: Text("Light"),
+                            value: ThemeMode.light,
+                          ),
+                        ],
+                        onChanged: (value) {
+                          print(value);
+                          appState.updateTheme(value);
+                          setState(() {
+                            this.settings.saveThemeMode(value);
+                          });
+                        },
+                      ),
                     ),
                     Divider(
                       height: 0.0,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
@@ -9,10 +10,12 @@ import 'instancecontroller.dart';
 
 class AppSettings {
   InstanceSettings instances;
+  ThemeMode themeMode;
 
   final storage = new FlutterSecureStorage();
 
   static const String field_instances = 'instances';
+  static const String field_thememode = 'thememode';
 
   Future loadDataFromProvider() async {
     String jsonString = await storage.read(key: AppSettings.field_instances);
@@ -21,6 +24,32 @@ class AppSettings {
     }
     List<dynamic> json = jsonDecode(jsonString);
     this.instances = InstanceSettings.fromJson(json);
+
+    String themeModeString = await storage.read(key: AppSettings.field_thememode);
+    this.themeMode = this.getThemeMode(themeModeString);
+  }
+
+  ThemeMode getThemeMode(String themeModeString) {
+    switch(themeModeString) {
+      case 'ThemeMode.dark':
+        return ThemeMode.dark;
+        break;
+      case 'ThemeMode.light':
+        return ThemeMode.light;
+        break;
+    }
+
+    return ThemeMode.system;
+  }
+
+  String getThemeModeString(ThemeMode themeMode) {
+    return ThemeMode.dark.toString();
+  }
+
+  Future saveThemeMode(ThemeMode themeMode) async {
+    this.themeMode = themeMode;
+    String themeModeString = this.getThemeModeString(themeMode);
+    await storage.write(key: AppSettings.field_thememode, value: themeModeString);
   }
 
   Future saveData(String id, String name, String url, String username, String password) async {

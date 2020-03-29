@@ -1,7 +1,11 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
+import 'package:kikke/app_state.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/screens/settings.dart';
 import 'package:kikke/time/timeago.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:kikke/controller/appsettings.dart';
 import 'package:kikke/controller/icingacontroller.dart';
@@ -31,7 +35,7 @@ void main() async {
 
   ServiceController serviceController = new ServiceController(controller: controller);
   HostController hostController = new HostController(controller: controller);
-
+  
   getIt.registerSingleton<InstanceController>(controller);
   getIt.registerSingleton<AppSettings>(appSettings);
   getIt.registerSingleton<ServiceController>(serviceController);
@@ -40,23 +44,44 @@ void main() async {
   timeago.setLocaleMessages('en', EnMessages());
   timeago.setLocaleMessages('de', DeMessages());
 
-  runApp(MaterialApp(
-    // Start the app with the "/" named route. In our case, the app will start
-    // on the FirstScreen Widget
-    darkTheme: ThemeData.dark(),
-    initialRoute: initRoute,
-    routes: {
-      // When we navigate to the "/" route, build the FirstScreen Widget
-      '/': (context) => AppHomePage(),
-      '/lists/hosts': (context) => AppListPage(controller: getIt.get<HostController>(), title: "Hosts",),
-      '/lists/services': (context) => AppListPage(controller: getIt.get<ServiceController>(), title: "Services",),
-      '/detail': (context) => AppDetailPage(),
-      '/settings': (context) => SettingsScreen(),
-      '/settings/account': (context) => SettingsPage(),
-      '/imprint': (context) => ImprintPage(),
-    },
-    title: 'Kikke',
-  ));
+  runApp(
+    ChangeNotifierProvider<AppState>(
+      create: (context) => AppState(appSettings.themeMode),
+      child: KikkeApp(initRoute),
+    ),
+  );
+}
+
+class KikkeApp extends StatelessWidget {
+  String initRoute;
+
+  KikkeApp(this.initRoute);
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, appState, _) {
+        return MaterialApp(
+          // Start the app with the "/" named route. In our case, the app will start
+          // on the FirstScreen Widget
+          darkTheme: ThemeData.dark(),
+          themeMode: appState.themeMode,
+          initialRoute: initRoute,
+          routes: {
+            // When we navigate to the "/" route, build the FirstScreen Widget
+            '/': (context) => AppHomePage(),
+            '/lists/hosts': (context) => AppListPage(controller: getIt.get<HostController>(), title: "Hosts",),
+            '/lists/services': (context) => AppListPage(controller: getIt.get<ServiceController>(), title: "Services",),
+            '/detail': (context) => AppDetailPage(),
+            '/settings': (context) => SettingsScreen(),
+            '/settings/account': (context) => SettingsPage(),
+            '/imprint': (context) => ImprintPage(),
+          },
+          title: 'Kikke',
+        );
+      },
+    );
+  }
 }
 
 class AppHomePage extends StatelessWidget {
