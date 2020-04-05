@@ -140,7 +140,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ],
                         onChanged: (value) {
-                          print(value);
                           appState.updateTheme(value);
                           setState(() {
                             this.settings.saveThemeMode(value);

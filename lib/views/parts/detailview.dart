@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/hostcontroller.dart';
 import 'package:kikke/controller/instancecontroller.dart';
+import 'package:kikke/controller/perfdatacontroller.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/controller/servicecontroller.dart';
 import 'package:kikke/models/host.dart';
@@ -36,6 +37,27 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     futures.add(this.hostController.fetch());
     await Future.wait(futures);
     setState(() {});
+  }
+
+  List<Widget> getPerfData(BuildContext context, IcingaObject iobject) {
+    PerfDataController p = PerfDataController(iobject);
+    if(p.perfData.length < 1) {
+      return [];
+    }
+
+    return [
+      Card(
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text("Performance Data", style: TextStyle(fontWeight: FontWeight.bold),),
+            ),
+            Divider(height: 0.0,),
+            ...p.getDetailPerfDataWidgets(context),
+          ],
+        ),
+      ),
+    ];
   }
 
   List<Widget> getDetails(BuildContext context, IcingaObject iobject) {
@@ -186,6 +208,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               child: ListView(
                 children: <Widget>[
                   ...getDetails(context, widget.iobject),
+                  ...getPerfData(context, widget.iobject),
                   if (widget.iobject is Host)
                     ...getServices(context, widget.iobject),
                 ],
