@@ -57,10 +57,17 @@ class PerfData {
     return SimpleRange(rangeString);
   }
 
+  bool withBackgroupColor() {
+    if((this.warn != null && this.warn.isInRange(this.value)) || (this.crit != null && this.crit.isInRange(this.value))) {
+      return true;
+    }
+    return false;
+  }
+
   Widget getDetailWidgetListTile(BuildContext context) {
     return Container(
       decoration: new BoxDecoration(
-        color: (!this.warn.isInRange(this.value) || !this.crit.isInRange(this.value)) ? this.iobject.getBackgroundColor(context): null,
+        color: this.withBackgroupColor() ? this.iobject.getBackgroundColor(context): null,
       ),
       child: ListTile(
         title: Text("${this.name} ${this.value.toString()}${(this.unit != null) ? this.unit : ""}"),
