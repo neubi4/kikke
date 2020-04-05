@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/models/icingaobject.dart';
@@ -58,10 +60,53 @@ class PerfData {
   }
 
   bool withBackgroupColor() {
-    if((this.warn != null && this.warn.isInRange(this.value)) || (this.crit != null && this.crit.isInRange(this.value))) {
+    if((this.warn != null && !this.warn.isInRange(this.value)) || (this.crit != null && !this.crit.isInRange(this.value))) {
       return true;
     }
     return false;
+  }
+
+  PerfDataFormatter getFormatter() {
+    if(this.unit != null) {
+      switch(this.unit.toLowerCase()) {
+        case "s":
+          return DurationPerfDataFormatter(this);
+          break;
+        case "b":
+          return BytePerfDataFormatter(this);
+          break;
+      }
+    }
+
+    return PerfDataFormatter(this);
+  }
+
+  List<Widget> getDetails() {
+    List<Widget> l = [];
+
+    l.add(Text("Value: ${this.value}"));
+
+    if(this.unit != null) {
+      l.add(Text("Unit: ${this.unit}"));
+    }
+
+    if(this.warn != null) {
+      l.add(Text("Warn: ${this.warn.rawRange}"));
+    }
+
+    if(this.crit != null) {
+      l.add(Text("Crit: ${this.crit.rawRange}"));
+    }
+
+    if(this.min != null) {
+      l.add(Text("Min: ${this.min}"));
+    }
+
+    if(this.max != null) {
+      l.add(Text("Max: ${this.max}"));
+    }
+
+    return l;
   }
 
   Widget getDetailWidgetListTile(BuildContext context) {
@@ -70,7 +115,32 @@ class PerfData {
         color: this.withBackgroupColor() ? this.iobject.getBackgroundColor(context): null,
       ),
       child: ListTile(
-        title: Text("${this.name} ${this.value.toString()}${(this.unit != null) ? this.unit : ""}"),
+        title: this.getFormatter().getTitle(),
+        subtitle: this.getFormatter().getSubTitle(),
+        onTap: () {
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(this.name),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: this.getDetails(),
+                  ),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Ok"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            }
+          );
+        },
         ),
     );
   }
@@ -141,5 +211,96 @@ class AdvancedRange extends Range {
     }
 
     return true;
+  }
+}
+
+class PerfDataFormatter {
+  PerfData perfData;
+
+  PerfDataFormatter(this.perfData);
+
+  Widget getTitle() {
+    return Text(getDefaultText(perfData.value.toString(), perfData.unit));
+  }
+
+  Widget getSubTitle() {
+    return null;
+  }
+
+  String getDefaultText(String value, String unit) {
+    String percentage = "";
+    if(perfData.max != null) {
+      percentage = " (${getPercentage().toStringAsFixed(2)}%)";
+    }
+    return "${perfData.name} $value ${(unit != null) ? unit : ""}$percentage";
+  }
+
+  double getPercentage() {
+    if(perfData.max == null) {
+      return null;
+    }
+    return ((perfData.value / perfData.max) * 100);
+  }
+}
+
+class SubtitledPerfDataFormatter extends PerfDataFormatter {
+  SubtitledPerfDataFormatter(PerfData perfData): super(perfData);
+
+  @override
+  Widget getSubTitle() {
+    return Text("${perfData.value.toString()} ${(perfData.unit != null) ? perfData.unit : ""}");
+  }
+}
+
+class DurationPerfDataFormatter extends SubtitledPerfDataFormatter {
+  DurationPerfDataFormatter(PerfData perfData): super(perfData);
+
+  @override
+  Widget getTitle() {
+    String ret = "";
+    Duration days = Duration(seconds: perfData.value.toInt());
+    Duration hours = days - Duration(days: days.inDays);
+    Duration minutes = days - Duration(hours: days.inHours);
+    Duration seconds = days - Duration(minutes: days.inMinutes);
+
+    if(seconds.inSeconds < 1) {
+      return Text(getDefaultText(perfData.value.toString(), perfData.unit));
+    }
+
+    ret = "${seconds.inSeconds}s";
+
+    if(minutes.inMinutes > 0) {
+      ret = "${minutes.inMinutes}m " + ret;
+    }
+
+    if(hours.inHours > 0) {
+      ret = "${hours.inHours}h " + ret;
+    }
+
+    if(days.inDays > 0) {
+      ret = "${days.inDays}d " + ret;
+    }
+
+    return Text("${perfData.name} $ret");
+  }
+}
+
+class BytePerfDataFormatter extends SubtitledPerfDataFormatter {
+  BytePerfDataFormatter(PerfData perfData) : super(perfData);
+
+  String formatBytes(int bytes, int decimals) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    var i = (log(bytes) / log(1024)).floor();
+    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
+        ' ' +
+        suffixes[i];
+  }
+
+  @override
+  Widget getTitle() {
+    double value = perfData.value;
+
+    return Text(getDefaultText(formatBytes(value.toInt(), 2), null));
   }
 }
