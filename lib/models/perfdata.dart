@@ -64,7 +64,7 @@ class PerfData {
       ),
       child: ListTile(
         title: Text("${this.name} ${this.value.toString()}${(this.unit != null) ? this.unit : ""}"),
-      ),
+        ),
     );
   }
 }

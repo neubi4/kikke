@@ -43,7 +43,7 @@ class AppSettings {
   }
 
   String getThemeModeString(ThemeMode themeMode) {
-    return ThemeMode.dark.toString();
+    return themeMode.toString();
   }
 
   Future saveThemeMode(ThemeMode themeMode) async {
