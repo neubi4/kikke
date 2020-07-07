@@ -32,9 +32,9 @@ class ListRow extends StatelessWidget {
 
   Widget showStatus() {
     if (this.iobject.getData('acknowledged') == "1") {
-      return Icon(Icons.check, color: Colors.green, size: 17.0);
+      return Icon(Icons.check, color: this.iobject.getIconColor(context, 'acknowledged'), size: 17.0);
     } else if (this.iobject.getData('in_downtime') == "1") {
-      return Icon(Icons.access_time, color: Colors.black45, size: 17.0);
+      return Icon(Icons.access_time, color: this.iobject.getIconColor(context, 'in_downtime'), size: 17.0);
     }
   }
 

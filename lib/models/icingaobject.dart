@@ -45,9 +45,9 @@ abstract class IcingaObject {
 
   final backgroundColorsDark = {
     0: null,
-    1: null,
-    2: null,
-    3: null,
+    1: Color(0xFF2B1B00),
+    2: Color(0xFF2B0000),
+    3: Color(0xFF12002E),
   };
 
   final icons = {
@@ -55,6 +55,16 @@ abstract class IcingaObject {
     1: Icon(Icons.error, color: Colors.orange),
     2: Icon(Icons.error, color: Colors.red),
     3: Icon(Icons.error, color: Colors.deepPurple),
+  };
+
+  final iconColors = {
+    'acknowledged': Colors.green,
+    'in_downtime': Colors.black45,
+  };
+
+  final iconColorsDark = {
+    'acknowledged': Colors.green[900],
+    'in_downtime': Colors.white54,
   };
 
   String getRawData(String key) {
@@ -95,6 +105,15 @@ abstract class IcingaObject {
     }
 
     return colors[this.getState()];
+  }
+
+  Color getIconColor(BuildContext context, String type) {
+    var colors = this.iconColors;
+    if(Theme.of(context).brightness == Brightness.dark) {
+      colors = this.iconColorsDark;
+    }
+
+    return colors[type];
   }
 
   String getStateText() {
