@@ -68,11 +68,13 @@ class PerfData {
 
   PerfDataFormatter getFormatter() {
     if(this.unit != null) {
+      print(this.unit);
       switch(this.unit.toLowerCase()) {
         case "s":
           return DurationPerfDataFormatter(this);
           break;
         case "b":
+        case "mb":
           return BytePerfDataFormatter(this);
           break;
       }
@@ -290,17 +292,51 @@ class BytePerfDataFormatter extends SubtitledPerfDataFormatter {
 
   String formatBytes(int bytes, int decimals) {
     if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    const suffixes = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
     var i = (log(bytes) / log(1024)).floor();
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
         ' ' +
         suffixes[i];
   }
 
+  double getCorrectValue([double v]) {
+    double value = perfData.value;
+    if(v != null) {
+      value = v;
+    }
+
+    switch(this.perfData.unit.toLowerCase()) {
+      case 'mb':
+        value = value * 1024 * 1024;
+        break;
+    }
+    return value;
+  }
+
   @override
   Widget getTitle() {
-    double value = perfData.value;
+    double value = this.getCorrectValue();
 
-    return Text(getDefaultText(formatBytes(value.toInt(), 2), null));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        LinearProgressIndicator(
+          value: this.perfData.value / this.perfData.max,
+          minHeight: 10,
+          valueColor: AlwaysStoppedAnimation<Color>(this.perfData.iobject.getBorderColor()),
+          backgroundColor: Colors.grey,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 6, 0, 0),
+          child: Text(getDefaultText(formatBytes(value.toInt(), 2), null)),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget getSubTitle() {
+    return Text("${formatBytes(this.getCorrectValue().toInt(), 2)}");
   }
 }
