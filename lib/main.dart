@@ -64,7 +64,7 @@ class KikkeApp extends StatelessWidget {
           // on the FirstScreen Widget
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            accentColor: Colors.purpleAccent,
+            accentColor: Colors.lightBlueAccent,
           ),
           themeMode: appState.themeMode,
           initialRoute: initRoute,

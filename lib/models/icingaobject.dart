@@ -98,13 +98,17 @@ abstract class IcingaObject {
     return this.borderColors[this.getState()];
   }
 
-  Color getBackgroundColor(BuildContext context) {
+  Color getBackgroundColor(BuildContext context, [int state]) {
+    if(state == null) {
+      state = this.getState();
+    }
+
     var colors = this.backgroundColors;
     if (Theme.of(context).brightness == Brightness.dark) {
       colors = this.backgroundColorsDark;
     }
 
-    return colors[this.getState()];
+    return colors[state];
   }
 
   Color getIconColor(BuildContext context, String type) {
