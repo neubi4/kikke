@@ -476,7 +476,7 @@ class BytePerfDataFormatter extends SubtitledPerfDataFormatter {
       this.perfData.warn,
     ];
 
-    if(this.perfData.warn.isInverted) {
+    if(this.perfData.warn != null && this.perfData.warn.isInverted) {
       conditions = List<Range>.from(conditions.reversed);
     }
 

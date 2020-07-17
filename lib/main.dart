@@ -17,6 +17,8 @@ import 'package:kikke/views/parts/listview.dart';
 import 'package:kikke/controller/hostcontroller.dart';
 import 'package:kikke/controller/service_locator.dart';
 
+import 'controller/perfdatacontroller.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +76,7 @@ class KikkeApp extends StatelessWidget {
             '/lists/hosts': (context) => AppListPage(controller: getIt.get<HostController>(), title: "Hosts",),
             '/lists/services': (context) => AppListPage(controller: getIt.get<ServiceController>(), title: "Services",),
             '/detail': (context) => AppDetailPage(),
+            '/detail/perfdata': (context) => AppDetailPerfdataPage(),
             '/settings': (context) => SettingsScreen(),
             '/settings/account': (context) => SettingsPage(),
             '/imprint': (context) => ImprintPage(),
@@ -255,6 +258,46 @@ class AppDetailPageState extends State<AppDetailPage> {
       ),
       body: new Center(
           child: IcingaDetailView(iobject: iobject)
+      ),
+    );
+  }
+}
+
+class AppDetailPerfdataPage extends StatefulWidget {
+  const AppDetailPerfdataPage({
+    Key key
+  }): super(key: key);
+
+  @override
+  createState() => new AppDetailPerfdataPageState();
+}
+
+class AppDetailPerfdataPageState extends State<AppDetailPerfdataPage> {
+  @override
+  Widget build(BuildContext context) {
+    IcingaObject iobject = ModalRoute.of(context).settings.arguments;
+    PerfDataController p = PerfDataController(iobject);
+
+    return  new Scaffold(
+      appBar: new AppBar(
+        title: new Text(iobject.getName()),
+      ),
+      body: new Center(
+          child: Scaffold(
+            body: Container(
+              child: Scrollbar(
+                child: ListView.separated(
+                  itemCount: p.perfData.length,
+                  itemBuilder: (context, index) {
+                    return p.perfData[index].getDetailWidgetListTile(context);
+                  },
+                  separatorBuilder: (context, index) {
+                    return Divider(height: 0.0,);
+                  },
+                ),
+              ),
+            ),
+          ),
       ),
     );
   }

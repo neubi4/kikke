@@ -45,6 +45,23 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
       return [];
     }
 
+    if(p.perfData.length > 30) {
+      return [
+        Card(
+          child: Column(
+            children: <Widget>[
+              ListTile(
+                title: Text("${p.perfData.length} Performance Data", style: TextStyle(fontWeight: FontWeight.bold),),
+                onTap: () {
+                  Navigator.pushNamed(context, '/detail/perfdata', arguments: iobject);
+                },
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+
     return [
       Card(
         child: Column(
