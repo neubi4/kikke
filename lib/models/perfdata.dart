@@ -62,7 +62,7 @@ class PerfData {
       double warnMax = this.warn.getMax();
       double critMax = this.crit.getMax();
       if(warnMax != null && critMax != null) {
-        if (warnMax > critMax) {
+        if ((warnMax > critMax) || ( warnMax == 0.0 && critMax == 0.0)) {
           this.warn.setInverted();
           this.crit.setInverted();
         }
