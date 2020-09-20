@@ -2,18 +2,27 @@ image: 'neubi4/flutter-build-image:latest'
 
 stages:
   - build
+  - upload
 
 build:
   stage: build
   script:
     - echo $key | base64 -d > /root/key.jks
     - echo $key_properties | base64 -d >  android/key.properties
-    - ls -la
-    - ls -la android
-    - cat android/key.properties
-    - ls -la /root/key.jks
     - flutter build apk --split-per-abi --flavor default
   artifacts:
     paths:
       - build/app/outputs/flutter-apk/*.apk
     expire_in: 1 day
+
+upload_appcenter:
+  stage: upload
+  image: node:buster-slim
+  needs:
+    - job: build
+      artifacts: true
+  script:
+    - node --version
+    - ls -la build/app/outputs/flutter-apk
+    - npm install -g appcenter-cli
+    - appcenter distribute release --token $appcenter_token --disable-telemetry --app nux/Kikke-Android -g Collaborators --silent -f build/app/outputs/flutter-apk/app-arm64-v8a-default-release.apk
