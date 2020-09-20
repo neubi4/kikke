@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/icingacontroller.dart';
+import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/screens/drawermenu.dart';
 import 'package:kikke/views/parts/listview.dart';
+import 'package:queries/collections.dart';
 
 class AppListPage extends StatefulWidget {
   const AppListPage({
@@ -20,6 +22,8 @@ class AppListPage extends StatefulWidget {
 class AppListPageState extends State<AppListPage> {
   final TextEditingController _filter = new TextEditingController();
   String searchText = "";
+  bool selectMode = false;
+  Collection<IcingaObject> selected = Collection<IcingaObject>();
   Icon searchIcon = Icon(Icons.search, color: Colors.white);
   Widget searchField;
   Widget appBarText;
@@ -80,6 +84,40 @@ class AppListPageState extends State<AppListPage> {
     });
   }
 
+  void _handleLongClick(IcingaObject iobject) {
+    setState(() {
+      if(this.selected.contains(iobject)) {
+        this.selected.remove(iobject);
+
+        if(this.selected.length == 0) {
+          this.selectMode = false;
+        }
+      } else {
+        this.selectMode = true;
+        this.selected.add(iobject);
+      }
+    });
+  }
+
+  Widget bottomNavBar(BuildContext context) {
+    return BottomAppBar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: Text("Acknowledge on ${this.selected.length} ${this.widget.controller.getType()}s",),
+            leading: Icon(Icons.check),
+          ),
+          Divider(height: 0.0,),
+          ListTile(
+            title: Text("Set Downtime on ${this.selected.length}  ${this.widget.controller.getType()}s",),
+            leading: Icon(Icons.access_time),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (this.appBarText == null) {
@@ -89,9 +127,10 @@ class AppListPageState extends State<AppListPage> {
     return  new Scaffold(
       appBar: this.buildAppBar(),
       body: new Center(
-          child: IcingaObjectListView(controller: widget.controller, listAll: true, search: this.searchText,)
+          child: IcingaObjectListView(controller: widget.controller, listAll: true, search: this.searchText, selectMode: this.selectMode, selected: this.selected, longClicked: _handleLongClick,)
       ),
       drawer: DrawerMenu(),
+      bottomNavigationBar: this.selectMode ? bottomNavBar(context) : null,
     );
   }
 }

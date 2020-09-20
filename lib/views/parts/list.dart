@@ -4,27 +4,39 @@ import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
 class ListRow extends StatelessWidget {
-  ListRow({Key key, this.iobject, this.clicked}): super(key: key);
+  ListRow({Key key, this.iobject, this.clicked, this.longClicked, this.selected}): super(key: key);
 
   final IcingaObject iobject;
   final ValueChanged<IcingaObject> clicked;
+  final ValueChanged<IcingaObject> longClicked;
+  bool selected = false;
   BuildContext context;
+
+  Color getBackgroundColor() {
+    return this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor(context) : null;
+  }
 
   Widget build(BuildContext context) {
     this.context = context;
     return new Container(
       decoration: new BoxDecoration(
-        color: this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor(context) : null,
+        color: this.getBackgroundColor(),
         border: Border(
           left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
         ),
       ),
       child: new ListTile(
         title: this.getTitle(),
+        leading: this.selected ? Icon(Icons.check_box) : null,
         subtitle: Text(this.iobject.getData(this.iobject.outputField)),
         trailing: this.showStatus(),
         onTap: () {
           clicked(this.iobject);
+        },
+        onLongPress: () {
+          if(this.longClicked != null) {
+            longClicked(this.iobject);
+          }
         },
       ),
     );
@@ -77,7 +89,7 @@ class ListRow extends StatelessWidget {
 }
 
 class ListRowNoHostname extends ListRow {
-  ListRowNoHostname({Key key, IcingaObject iobject, ValueChanged<IcingaObject> clicked}): super(key: key, iobject: iobject, clicked: clicked);
+  ListRowNoHostname({Key key, IcingaObject iobject, ValueChanged<IcingaObject> clicked, ValueChanged<IcingaObject> longClicked, bool selected}): super(key: key, iobject: iobject, clicked: clicked, longClicked: longClicked, selected: selected);
 
   Widget getTitle() {
     if (this.iobject.getData('display_name') != null) {

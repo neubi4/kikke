@@ -10,11 +10,17 @@ class IcingaObjectListView extends StatefulWidget {
     @required this.controller,
     this.listAll = false,
     this.search = "",
+    this.selectMode = false,
+    this.selected,
+    this.longClicked,
   }) : super(key: key);
 
   final IcingaObjectController controller;
   final bool listAll;
   final String search;
+  final bool selectMode;
+  final Collection<IcingaObject> selected;
+  final ValueChanged<IcingaObject> longClicked;
 
   @override
   createState() => new IcingaObjectListViewState();
@@ -28,7 +34,15 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
   }
 
   void _handleClick(IcingaObject iobject) {
-    Navigator.pushNamed(context, '/detail', arguments: iobject);
+    if(this.widget.selectMode) {
+      this._handleLongClick(iobject);
+    } else {
+      Navigator.pushNamed(context, '/detail', arguments: iobject);
+    }
+  }
+
+  void _handleLongClick(IcingaObject iobject) {
+    this.widget.longClicked(iobject);
   }
 
   Future getListFuture() {
@@ -93,8 +107,12 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
                 ),
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
+                  bool _selected = false;
+                  if(this.widget.selected != null) {
+                    _selected = this.widget.selected.contains(snapshot.data[index]);
+                  }
                   return ListRow(
-                      iobject: snapshot.data[index], clicked: _handleClick);
+                      iobject: snapshot.data[index], clicked: _handleClick, longClicked: _handleLongClick, selected: _selected);
                 },
               ),
             ),

@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart';
+import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
+import '../exceptions.dart';
 import 'host.dart';
 
 class IcingaInstance {
@@ -102,6 +105,40 @@ class IcingaInstance {
     } else {
       Host host = await this.getHost(item['host_name']);
       this.services[item['host_name'] + item['service_description']] = Service.fromJson(item, host, this);
+    }
+  }
+
+  Future acknowledge(IcingaObject iobject, String comment, {bool persistent = false, int expire = 0, bool sticky = false, bool notify = false}) async {
+    final headers = this.getDefaultHeaders();
+    String icingaUrl = this.getUrl();
+
+    String url = "";
+    if(iobject is Service) {
+      url = "monitoring/service/acknowledge-problem?host=${iobject.host.name}&service=${iobject.name}";
+    } else {
+      url = "monitoring/host/acknowledge-problem?host=${iobject.name}";
+    }
+
+    print("${this.name} ack ${url}");
+
+    FormData formData = new FormData.fromMap({
+      "comment": comment,
+      "expire": expire,
+      "notify": notify ? 1 : 0,
+      "persistent": persistent ? 1 : 0,
+      "sticky": sticky ? 1 : 0,
+    });
+
+    try {
+      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
+        headers: headers,
+        responseType: dio.ResponseType.plain,
+        sendTimeout: 3000,
+        receiveTimeout: 60000,
+      ));
+    } on DioError catch(e) {
+      var jsonData = json.decode(e.response.data);
+      throw Icingaweb2APIException(jsonData['message']);
     }
   }
 

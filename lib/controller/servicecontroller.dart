@@ -10,6 +10,10 @@ class ServiceController implements IcingaObjectController {
 
   ServiceController({this.controller});
 
+  String getType() {
+    return "Service";
+  }
+
   Future fetch() async {
     List<Future> futures = [];
     this.controller.instances.forEach((instance) {

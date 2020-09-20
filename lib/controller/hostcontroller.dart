@@ -11,6 +11,10 @@ class HostController implements IcingaObjectController {
 
   HostController({this.controller});
 
+  String getType() {
+    return "Host";
+  }
+
   Future fetch() async {
     List<Future> futures = [];
     this.controller.instances.forEach((instance) {
