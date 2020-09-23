@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
@@ -108,26 +109,34 @@ class IcingaInstance {
     }
   }
 
-  Future acknowledge(IcingaObject iobject, String comment, {bool persistent = false, int expire = 0, bool sticky = false, bool notify = false}) async {
+  Future acknowledge(IcingaObject iobject, String comment, {bool persistent = false, bool expire = false, bool sticky = false, bool notify = false, DateTime expireTime}) async {
     final headers = this.getDefaultHeaders();
     String icingaUrl = this.getUrl();
 
     String url = "";
     if(iobject is Service) {
-      url = "monitoring/service/acknowledge-problem?host=${iobject.host.name}&service=${iobject.name}";
+      url = "monitoring/service/acknowledge-problem?host=${iobject.host.getName()}&service=${iobject.getName()}";
     } else {
-      url = "monitoring/host/acknowledge-problem?host=${iobject.name}";
+      url = "monitoring/host/acknowledge-problem?host=${iobject.getName()}";
     }
 
     print("${this.name} ack ${url}");
 
-    FormData formData = new FormData.fromMap({
+    Map<String, dynamic> mapData = {
       "comment": comment,
-      "expire": expire,
+      "expire": expire ? 1 : 0,
       "notify": notify ? 1 : 0,
       "persistent": persistent ? 1 : 0,
       "sticky": sticky ? 1 : 0,
-    });
+    };
+
+    if(expire) {
+      mapData["expire_time"] = DateFormat('yyyy-MM-ddThh:mm:ss').format(expireTime);
+    }
+
+    FormData formData = new FormData.fromMap(mapData);
+
+    String msg;
 
     try {
       final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
@@ -136,9 +145,21 @@ class IcingaInstance {
         sendTimeout: 3000,
         receiveTimeout: 60000,
       ));
+
+      var jsonData = json.decode(response.data);
+      print(jsonData);
+      if(jsonData['status'] == 'fail') {
+        throw Exception(response.data.toString());
+      }
+
     } on DioError catch(e) {
-      var jsonData = json.decode(e.response.data);
-      throw Icingaweb2APIException(jsonData['message']);
+      try {
+        var jsonData = json.decode(e.response.data);
+        msg = jsonData['message'];
+      } on Exception catch(ee) {
+        throw Exception(e.response.data);
+      }
+      throw Exception(msg);
     }
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kikke/app_state.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/screens/settings.dart';
@@ -60,6 +62,17 @@ class KikkeApp extends StatelessWidget {
     return Consumer<AppState>(
       builder: (context, appState, _) {
         return MaterialApp(
+          localizationsDelegates: [
+            // ... app-specific localization delegate[s] here
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            const Locale('en', ''),
+            const Locale('de', ''),
+            // ... other locales the app supports
+          ],
           // Start the app with the "/" named route. In our case, the app will start
           // on the FirstScreen Widget
           darkTheme: ThemeData(

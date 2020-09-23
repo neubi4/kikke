@@ -10,6 +10,7 @@ import 'package:kikke/controller/servicecontroller.dart';
 import 'package:kikke/models/host.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
+import 'package:kikke/screens/dialog_ack.dart';
 import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
 
@@ -77,14 +78,6 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     ];
   }
 
-  String _validateComment(String value) {
-    if (value.length < 3) {
-      return 'The Comment must be at least 1 character.';
-    }
-
-    return null;
-  }
-
   List<Widget> getDetails(BuildContext context, IcingaObject iobject) {
     return [
       Card(
@@ -118,132 +111,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               title: Text("Acknowledge"),
               leading: Icon(Icons.check),
               onTap: () async {
-                showDialog(
-                    context: context,
-                    barrierDismissible: true,
-                    builder: (BuildContext context) {
-                      final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-                      String comment = "";
-                      bool notify = true;
-                      bool persistent = false;
-                      bool sticky = false;
-                      int expire = 0;
-
-                      bool isLoading = false;
-                      String error = "";
-
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          if(isLoading) {
-                            return AlertDialog(
-                              title: Text("Acknowledge ${this.widget.iobject.name}"),
-                              content: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    CircularProgressIndicator(),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          return AlertDialog(
-                            title: Text("Acknowledge ${this.widget.iobject.name}"),
-                            content: SingleChildScrollView(
-                              child: Form(
-                                key: _formKey,
-                                child: Column(
-                                  children: [
-                                    if (error != "")
-                                      Text(error),
-                                    TextFormField(
-                                      keyboardType: TextInputType.text,
-                                      decoration: new InputDecoration(
-                                        hintText: 'Comment',
-                                        labelText: 'Comment',
-                                      ),
-                                      validator: this._validateComment,
-                                      onSaved: (String value) {
-                                        comment = value;
-                                      },
-                                    ),
-                                    Row(
-                                      children: [
-                                        Switch(
-                                          value: notify,
-                                          onChanged: (bool value) {
-                                            setState(() {
-                                              notify = value;
-                                            });
-                                          },
-                                        ),
-                                        Text("Notify"),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Switch(
-                                          value: sticky,
-                                          onChanged: (bool value) {
-                                            setState(() {
-                                              sticky = value;
-                                            });
-                                          },
-                                        ),
-                                        Text("Sticky"),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Switch(
-                                          value: persistent,
-                                          onChanged: (bool value) {
-                                            setState(() {
-                                              persistent = value;
-                                            });
-                                          },
-                                        ),
-                                        Text("Persistend"),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text("Acknowledge"),
-                                onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    _formKey.currentState.save();
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    try {
-                                      await iobject.instance.acknowledge(iobject, comment, notify: notify, expire: expire, sticky: sticky, persistent: persistent);
-                                      Navigator.of(context).pop();
-                                    } on Exception catch(e) {
-                                      setState(() {
-                                        isLoading = false;
-                                        error = e.toString();
-                                      });
-                                    }
-                                  }
-                                },
-                              ),
-                              FlatButton(
-                                child: Text("Cancel"),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    });
+                AckDialog.show(context, setState, [iobject]);
               },
             ),
           ],
