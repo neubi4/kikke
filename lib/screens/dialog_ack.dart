@@ -39,10 +39,41 @@ class AckDialog {
     return null;
   }
 
-  static void show(BuildContext context, StateSetter setState, List<IcingaObject> iobjects) async {
+  static void showRemoveDialog(BuildContext context, StateSetter setState, List<IcingaObject> iobjects) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        bool isLoading = false;
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Remove ${AckDialog.getTitle(iobjects)}"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            );
+          }
+        );
+      }
+    );
+
+    for(int i = 0; i < iobjects.length; i++) {
+      await iobjects[i].instance.removeAcknowledge(iobjects[i]);
+    }
+    Navigator.of(context).pop();
+  }
+
+  static void show(BuildContext context, StateSetter setState, List<IcingaObject> iobjects, {callback}) async {
     showDialog(
         context: context,
-        barrierDismissible: true,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
           String comment = "";
@@ -198,6 +229,9 @@ class AckDialog {
                           });
                         } else {
                           Navigator.of(context).pop();
+                          if(callback != null) {
+                            callback();
+                          }
                         }
                       }
                     },

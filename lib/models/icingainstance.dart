@@ -6,6 +6,7 @@ import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
 import '../exceptions.dart';
+import 'downtime.dart';
 import 'host.dart';
 
 class IcingaInstance {
@@ -16,11 +17,14 @@ class IcingaInstance {
 
   Map<String, Service> services = new Map();
   Map<String, Host> hosts = new Map();
+  Map<String, Downtime> downtimes = new Map();
 
   bool fetchedAllServices = false;
   bool fetchedAllHosts = false;
+  bool fetchedAllDowntimes = false;
   DateTime lastUpdateServices = new DateTime(1970);
   DateTime lastUpdateHosts = new DateTime(1970);
+  DateTime lastUpdateDowntimes = new DateTime(1970);
 
   IcingaInstance(this.name, this.url, this.username, this.password);
 
@@ -109,6 +113,54 @@ class IcingaInstance {
     }
   }
 
+  Future removeAcknowledge(IcingaObject iobject) async {
+    final headers = this.getDefaultHeaders();
+    String icingaUrl = this.getUrl();
+
+    String url = "";
+    if(iobject is Service) {
+      url = "monitoring/service/show?host=${iobject.host.getName()}&service=${iobject.getName()}";
+    } else {
+      url = "monitoring/host/show?host=${iobject.getName()}";
+    }
+
+    print("${this.name} remove ack ${url}");
+
+    Map<String, dynamic> mapData = {
+      "formUID": "IcingaModuleMonitoringFormsCommandObjectRemoveAcknowledgementCommandForm",
+      "btn_submit": "Remove acknowledgement",
+    };
+
+    FormData formData = new FormData.fromMap(mapData);
+    print(mapData);
+
+    String msg;
+
+    try {
+      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
+        headers: headers,
+        responseType: dio.ResponseType.plain,
+        sendTimeout: 3000,
+        receiveTimeout: 60000,
+      ));
+
+      var jsonData = json.decode(response.data);
+      print(jsonData);
+      if(jsonData['status'] == 'fail') {
+        throw Exception(response.data.toString());
+      }
+
+    } on DioError catch(e) {
+      try {
+        var jsonData = json.decode(e.response.data);
+        msg = jsonData['message'];
+      } on Exception catch(ee) {
+        throw Exception(e.response.data);
+      }
+      throw Exception(msg);
+    }
+  }
+
   Future acknowledge(IcingaObject iobject, String comment, {bool persistent = false, bool expire = false, bool sticky = false, bool notify = false, DateTime expireTime}) async {
     final headers = this.getDefaultHeaders();
     String icingaUrl = this.getUrl();
@@ -133,6 +185,57 @@ class IcingaInstance {
     if(expire) {
       mapData["expire_time"] = DateFormat('yyyy-MM-ddThh:mm:ss').format(expireTime);
     }
+
+    FormData formData = new FormData.fromMap(mapData);
+
+    String msg;
+
+    try {
+      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
+        headers: headers,
+        responseType: dio.ResponseType.plain,
+        sendTimeout: 3000,
+        receiveTimeout: 60000,
+      ));
+
+      var jsonData = json.decode(response.data);
+      print(jsonData);
+      if(jsonData['status'] == 'fail') {
+        throw Exception(response.data.toString());
+      }
+
+    } on DioError catch(e) {
+      try {
+        var jsonData = json.decode(e.response.data);
+        msg = jsonData['message'];
+      } on Exception catch(ee) {
+        throw Exception(e.response.data);
+      }
+      throw Exception(msg);
+    }
+  }
+
+  Future scheduleDowmtime(IcingaObject iobject, String comment, DateTime start, DateTime end, {String type = "fixed"}) async {
+    final headers = this.getDefaultHeaders();
+    String icingaUrl = this.getUrl();
+
+    String url = "";
+    if(iobject is Service) {
+      url = "monitoring/service/schedule-downtime?host=${iobject.host.getName()}&service=${iobject.getName()}";
+    } else {
+      url = "monitoring/host/schedule-downtime?host=${iobject.getName()}";
+    }
+
+    print("${this.name} ack ${url}");
+
+    Map<String, dynamic> mapData = {
+      "comment": comment,
+      "start": DateFormat('yyyy-MM-ddTHH:mm:ss').format(start),
+      "end": DateFormat('yyyy-MM-ddTHH:mm:ss').format(end),
+      "type": type,
+    };
+
+    print(mapData);
 
     FormData formData = new FormData.fromMap(mapData);
 
@@ -206,6 +309,50 @@ class IcingaInstance {
     return null;
   }
 
+  Future fetchDowntimes() async {
+    this.lastUpdateDowntimes = DateTime.now();
+
+    final headers = this.getDefaultHeaders();
+
+    print("${this.name} fetching downtimes");
+
+    String icingaUrl = this.getUrl();
+
+    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/downtimes?limit=10000&format=json', options: dio.Options(
+      headers: headers,
+      responseType: dio.ResponseType.plain,
+      sendTimeout: 3000,
+      receiveTimeout: 60000,
+    ));
+
+    if (response.statusCode == 200) {
+      var jsonData = json.decode(response.data);
+
+      jsonData.forEach((item) {
+        if (this.downtimes.containsKey(item['name'])) {
+          this.downtimes[item['name']].update(item);
+        } else {
+          this.downtimes[item['name']] = Downtime.fromJson(item, this);
+        }
+
+        this.fetchedAllDowntimes = true;
+      });
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load downtimes, ${response.request.method} ${response.request.uri} ${response.statusCode} ${response.data}');
+    }
+  }
+
+  Future<Downtime> getDowntime(String downtimeName) async {
+    await this.checkUpdateHosts();
+
+    if (this.downtimes.containsKey(downtimeName)) {
+      return this.downtimes[downtimeName];
+    }
+    return null;
+  }
+
+
   Future<void> checkUpdateHosts() async {
     Duration diff = DateTime.now().difference(this.lastUpdateHosts);
     if (!this.fetchedAllHosts | (diff.inSeconds > 60)) {
@@ -217,6 +364,13 @@ class IcingaInstance {
     Duration diff = DateTime.now().difference(this.lastUpdateServices);
     if (!this.fetchedAllServices | (diff.inSeconds > 60)) {
       await this.fetchServices();
+    }
+  }
+
+  Future<void> checkUpdateDowntimes() async {
+    Duration diff = DateTime.now().difference(this.lastUpdateDowntimes);
+    if (!this.fetchedAllDowntimes | (diff.inSeconds > 60)) {
+      await this.fetchDowntimes();
     }
   }
 }

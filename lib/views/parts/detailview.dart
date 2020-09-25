@@ -11,6 +11,7 @@ import 'package:kikke/models/host.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 import 'package:kikke/screens/dialog_ack.dart';
+import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
 
@@ -104,14 +105,35 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               title: Text("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
               subtitle: Text('Last state Change'),
             ),
+            if (iobject.getData('acknowledged') == "0" && iobject.getState() != 0)
+              Divider(
+                height: 0.0,
+              ),
+            if (iobject.getData('acknowledged') == "0" && iobject.getState() != 0)
+              ListTile(
+                title: Text("Acknowledge"),
+                leading: Icon(Icons.check),
+                onTap: () async {
+                  AckDialog.show(context, setState, [iobject], callback: _refresh);
+                },
+              ),
+            /* Currently not working, post to remove ack only reschedules check
+            if (iobject.getData('acknowledged') == "1" && iobject.getState() != 0)
+              ListTile(
+                title: Text("Remove Acknowledgement"),
+                leading: Icon(Icons.check),
+                onTap: () async {
+                  AckDialog.showRemoveDialog(context, setState, [iobject]);
+                },
+              ),*/
             Divider(
               height: 0.0,
             ),
             ListTile(
-              title: Text("Acknowledge"),
-              leading: Icon(Icons.check),
+              title: Text("Schedule Downtime"),
+              leading: Icon(Icons.access_time),
               onTap: () async {
-                AckDialog.show(context, setState, [iobject]);
+                DowntimeDialog.show(context, setState, [iobject], callback: _refresh);
               },
             ),
           ],

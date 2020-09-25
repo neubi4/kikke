@@ -65,10 +65,6 @@ class ListRow extends StatelessWidget {
   }
 
   Widget getTitle() {
-    if (Theme.of(context).brightness == Brightness.dark)
-    {
-
-    }
     if (this.iobject is Service) {
       Service service = this.iobject;
       return RichText(

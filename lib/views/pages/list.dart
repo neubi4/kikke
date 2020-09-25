@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kikke/controller/icingacontroller.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/screens/dialog_ack.dart';
+import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/screens/drawermenu.dart';
 import 'package:kikke/views/parts/listview.dart';
 import 'package:queries/collections.dart';
@@ -116,6 +117,9 @@ class AppListPageState extends State<AppListPage> {
           ListTile(
             title: Text("Set Downtime on ${this.selected.length}  ${this.widget.controller.getType()}s",),
             leading: Icon(Icons.access_time),
+            onTap: () {
+              DowntimeDialog.show(context, setState, this.selected.toList());
+            },
           ),
           Divider(height: 0.0,),
           ListTile(

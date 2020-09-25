@@ -45,6 +45,13 @@ class DrawerMenu extends StatelessWidget {
               },
             ),
             ListTile(
+              title: Text('Downtimes'),
+              selected: ModalRoute.of(context).settings.name == '/lists/downtimes' ,
+              onTap: () {
+                Navigator.popAndPushNamed(context, '/lists/downtimes');
+              },
+            ),
+            ListTile(
               title: Text('Settings'),
               selected: ModalRoute.of(context).settings.name == '/settings' ,
               onTap: () {
