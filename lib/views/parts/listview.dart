@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kikke/controller/downtimescontroller.dart';
 import 'package:kikke/controller/icingacontroller.dart';
+import 'package:kikke/controller/service_locator.dart';
+import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
@@ -33,10 +36,17 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
     setState(() {});
   }
 
-  void _handleClick(IcingaObject iobject) {
+  void _handleClick(IcingaObject iobject) async {
     if(this.widget.selectMode) {
       this._handleLongClick(iobject);
     } else {
+      if(iobject is Downtime) {
+        IcingaObject parent = iobject.getParent();
+        if(parent != null) {
+          Navigator.pushNamed(context, '/detail', arguments: parent);
+        }
+        return;
+      }
       Navigator.pushNamed(context, '/detail', arguments: iobject);
     }
   }
@@ -86,6 +96,10 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
 
   @override
   Widget build(BuildContext context) {
+
+    //DowntimesController a = getIt.get<DowntimesController>();
+    //a.getAllSync();
+
     return FutureBuilder<Collection<IcingaObject>>(
       future: this.getListFuture(),
       builder: (context, snapshot) {
@@ -111,8 +125,13 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
                   if(this.widget.selected != null) {
                     _selected = this.widget.selected.contains(snapshot.data[index]);
                   }
-                  return ListRow(
-                      iobject: snapshot.data[index], clicked: _handleClick, longClicked: _handleLongClick, selected: _selected);
+                  if(snapshot.data[index] is Downtime) {
+                    return ListRowDowntime(
+                        iobject: snapshot.data[index], clicked: _handleClick, longClicked: _handleLongClick, selected: _selected);
+                  } else {
+                    return ListRow(
+                        iobject: snapshot.data[index], clicked: _handleClick, longClicked: _handleLongClick, selected: _selected);
+                  }
                 },
               ),
             ),

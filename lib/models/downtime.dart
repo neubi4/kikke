@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
 
 import 'icingainstance.dart';
@@ -30,7 +31,11 @@ class Downtime with IcingaObject {
   }
 
   String getDisplayName() {
-    return this.getRawData('name');
+    if(this.getRawData('service_description') == null) {
+      return this.getRawData('host_name');
+    }
+
+    return "${this.getRawData('service_description')} on ${this.getRawData('host_name')}";
   }
 
   String getAllNames() {
@@ -43,5 +48,31 @@ class Downtime with IcingaObject {
 
   int getState() {
     return 0;
+  }
+
+  IcingaObject getParent() {
+    if(this.getRawData('service_description') == null) {
+      //is host downtime
+      if(this.instance.hosts.containsKey(this.getRawData('host_name'))) {
+        return this.instance.hosts[this.getRawData('host_name')];
+      }
+    } else {
+      if(this.instance.services.containsKey(this.getRawData('host_name') + this.getRawData('service_description'))) {
+        return this.instance.services[this.getRawData('host_name') + this.getRawData('service_description')];
+      }
+    }
+    
+    //noting found?
+    return null;
+  }
+
+  String getDescription(BuildContext context) {
+    DateTime dateStart = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getRawData('start')) * 1000);
+    DateTime dateEnd = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getRawData('end')) * 1000);
+
+    String start = DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(dateStart);
+    String end = DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(dateEnd);
+
+    return "${start} until ${end}, set by ${this.getRawData('author_name')} comment: ${this.getRawData('comment')}";
   }
 }

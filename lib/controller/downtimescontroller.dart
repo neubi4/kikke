@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:kikke/controller/icingacontroller.dart';
 import 'package:kikke/models/downtime.dart';
+import 'package:kikke/models/host.dart';
 import 'package:kikke/models/icingaobject.dart';
+import 'package:kikke/models/service.dart';
 
 import 'package:queries/collections.dart';
 
@@ -37,6 +39,10 @@ class DowntimesController implements IcingaObjectController {
   Future<Collection<Downtime>> getAll() async {
     await this.checkUpdate();
 
+    return this.getAllSync();
+  }
+
+  Collection<Downtime> getAllSync() {
     List<Downtime> l = new List();
     this.controller.instances.forEach((instance) {
       instance.downtimes.forEach((name, downtime) => l.add(downtime));
@@ -44,7 +50,7 @@ class DowntimesController implements IcingaObjectController {
 
     var m = new Collection<Downtime>(l);
     return m
-        .orderBy((downtime) => int.parse(downtime.getData('last_state_change')))
+        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
         .thenBy((downtime) => downtime.getName().toLowerCase())
         .toCollection();
   }
@@ -62,7 +68,32 @@ class DowntimesController implements IcingaObjectController {
 
     var m = new Collection<Downtime>(l);
     return m
-        .orderBy((downtime) => int.parse(downtime.getData('last_state_change')))
+        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
+        .thenBy((downtime) => downtime.getName().toLowerCase())
+        .toCollection();
+  }
+
+  Future<Collection<Downtime>> getForObject(IcingaObject iobject) async {
+    await this.checkUpdate();
+
+    List<Downtime> l = new List();
+    this.controller.instances.forEach((instance) {
+      instance.downtimes.forEach((name, downtime) {
+        if(iobject is Host) {
+          if(downtime.getRawData('host_name') == iobject.getName()) {
+            l.add(downtime);
+          }
+        } else if(iobject is Service) {
+          if(downtime.getRawData('service_description') == iobject.getName() && downtime.getRawData('host_name') == iobject.host.getName()) {
+            l.add(downtime);
+          }
+        }
+      });
+    });
+
+    var m = new Collection<Downtime>(l);
+    return m
+        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
         .thenBy((downtime) => downtime.getName().toLowerCase())
         .toCollection();
   }

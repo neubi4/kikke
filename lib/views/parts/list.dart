@@ -1,5 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
@@ -16,30 +18,46 @@ class ListRow extends StatelessWidget {
     return this.iobject.getData('handled') == "0" ? this.iobject.getBackgroundColor(context) : null;
   }
 
+  void onTap() {
+    clicked(this.iobject);
+  }
+
+  void onLongPress() {
+    if(this.longClicked != null) {
+      longClicked(this.iobject);
+    }
+  }
+
   Widget build(BuildContext context) {
     this.context = context;
     return new Container(
       decoration: new BoxDecoration(
         color: this.getBackgroundColor(),
-        border: Border(
-          left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
-        ),
+        border: this.getBorder(),
       ),
       child: new ListTile(
         title: this.getTitle(),
-        leading: this.selected ? Icon(Icons.check_box) : null,
-        subtitle: Text(this.iobject.getData(this.iobject.outputField)),
+        leading: this.getLeading(),
+        subtitle: this.getSubTitle(),
         trailing: this.showStatus(),
-        onTap: () {
-          clicked(this.iobject);
-        },
-        onLongPress: () {
-          if(this.longClicked != null) {
-            longClicked(this.iobject);
-          }
-        },
+        onTap: this.onTap,
+        onLongPress: this.onLongPress,
       ),
     );
+  }
+
+  Border getBorder() {
+    return Border(
+      left: BorderSide(width: 5, color: this.iobject.getBorderColor()),
+    );
+  }
+
+  Widget getLeading() {
+    return this.selected ? Icon(Icons.check_box) : null;
+  }
+
+  Widget getSubTitle() {
+    return Text(this.iobject.getData(this.iobject.outputField));
   }
 
   Widget showStatus() {
@@ -95,6 +113,33 @@ class ListRowNoHostname extends ListRow {
   }
 
   Widget showInstance() {
+    return null;
+  }
+}
+
+class ListRowDowntime extends ListRow {
+  ListRowDowntime({Key key, IcingaObject iobject, ValueChanged<IcingaObject> clicked, ValueChanged<IcingaObject> longClicked, bool selected}): super(key: key, iobject: iobject, clicked: clicked, longClicked: longClicked, selected: selected);
+
+  void onLongPress() {
+    return null;
+  }
+
+  Widget getSubTitle() {
+    IcingaObject i = iobject;
+    if(i is Downtime) {
+      return Text(i.getDescription(this.context));
+    }
+  }
+
+  Widget showInstance() {
+    return null;
+  }
+
+  Color getBackgroundColor() {
+    return null;
+  }
+
+  Border getBorder() {
     return null;
   }
 }

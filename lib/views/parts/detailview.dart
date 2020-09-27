@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:kikke/controller/downtimescontroller.dart';
 import 'package:kikke/controller/hostcontroller.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/controller/perfdatacontroller.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/controller/servicecontroller.dart';
+import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/host.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
@@ -31,6 +33,19 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   InstanceController controller;
   ServiceController serviceController = getIt.get<ServiceController>();
   HostController hostController = getIt.get<HostController>();
+  DowntimesController downtimeController = getIt.get<DowntimesController>();
+
+  Collection<Downtime> downtimes;
+
+  @override
+  initState() {
+    super.initState();
+    downtimeController.getForObject(widget.iobject).then((value) {
+      setState(() {
+        this.downtimes = value;
+      });
+    });
+  }
 
   Future<void> _refresh() async {
     print('refreshing...');
@@ -77,6 +92,39 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
         ),
       ),
     ];
+  }
+
+  List<Widget> getDowntimes(BuildContext context, IcingaObject iobject) {
+    List<Widget> l = [];
+
+    if(this.downtimes == null) {
+      l.add(
+        Divider(
+          height: 0.0,
+        ),
+      );
+      l.add(
+        ListTile(
+          title: Text('Downtimes'),
+          leading: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      this.downtimes.toList().forEach((downtime) {
+        l.add(
+          Divider(
+            height: 0.0,
+          ),
+        );
+        l.add(
+          ListTile(
+            title: Text("Downtime ${downtime.getDescription(context)}"),
+          ),
+        );
+      });
+    }
+
+    return l;
   }
 
   List<Widget> getDetails(BuildContext context, IcingaObject iobject) {
@@ -136,6 +184,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
                 DowntimeDialog.show(context, setState, [iobject], callback: _refresh);
               },
             ),
+            ...getDowntimes(context, iobject),
           ],
         ),
       )
