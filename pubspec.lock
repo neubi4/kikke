@@ -56,7 +56,7 @@ packages:
       name: connectivity
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.9+3"
+    version: "0.4.9+5"
   connectivity_for_web:
     dependency: transitive
     description:
@@ -98,7 +98,7 @@ packages:
       name: cupertino_icons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.3"
+    version: "1.0.0"
   dio:
     dependency: "direct main"
     description:
@@ -167,7 +167,7 @@ packages:
       name: get_it
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.0"
+    version: "5.0.1"
   http_parser:
     dependency: transitive
     description:
@@ -182,6 +182,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  js:
+    dependency: transitive
+    description:
+      name: js
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.3-nullsafety.1"
   matcher:
     dependency: transitive
     description:
@@ -195,7 +202,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.0-nullsafety.3"
+    version: "1.3.0-nullsafety.4"
   nested:
     dependency: transitive
     description:
@@ -272,7 +279,7 @@ packages:
       name: shared_preferences
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.5.12"
+    version: "0.5.12+2"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -326,7 +333,7 @@ packages:
       name: stack_trace
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.0-nullsafety.1"
+    version: "1.10.0-nullsafety.2"
   stream_channel:
     dependency: transitive
     description:
@@ -405,5 +412,5 @@ packages:
     source: hosted
     version: "0.1.2"
 sdks:
-  dart: ">=2.10.0-110 <2.11.0"
+  dart: ">=2.10.0-110 <=2.11.0-213.1.beta"
   flutter: ">=1.20.0 <2.0.0"
