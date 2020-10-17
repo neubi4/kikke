@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
+import 'package:kikke/storage/app_secure.dart';
 
 import 'instancecontroller.dart';
 
@@ -12,7 +12,7 @@ class AppSettings {
   InstanceSettings instances;
   ThemeMode themeMode;
 
-  final storage = new FlutterSecureStorage();
+  final storage = new Storage();
 
   static const String field_instances = 'instances';
   static const String field_thememode = 'thememode';
