@@ -39,6 +39,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  msix: ^0.1.15
 
 
 # For information on the generic Dart part of this file, see the
@@ -82,3 +83,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+msix_config:
+  display_name: Kikke
+  publisher_display_name: slashserver.net
+  identity_name: net.slashserver.kikke
+  msix_version: 0.1.0.0
+  icons_background_color: transparent
+  architecture: x64
+  capabilities: 'internetClient'

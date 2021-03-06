@@ -18,7 +18,7 @@ class AppDetailPageState extends State<AppDetailPage> {
 
     return  new Scaffold(
       appBar: new AppBar(
-        title: new Text(iobject.getName()),
+        title: new SelectableText(iobject.getName()),
       ),
       body: new Center(
           child: IcingaDetailView(iobject: iobject)

@@ -143,14 +143,14 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               height: 0.0,
             ),
             ListTile(
-              title: Text(iobject.getData('check_command')),
+              title: SelectableText(iobject.getData('check_command')),
               subtitle: Text('Check Command'),
             ),
             Divider(
               height: 0.0,
             ),
             ListTile(
-              title: Text("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
+              title: SelectableText("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
               subtitle: Text('Last state Change'),
             ),
             if (iobject.getData('acknowledged') == "0" && iobject.getState() != 0)
@@ -228,9 +228,9 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
           onTap: () {
             this._handleClick(iobject);
           },
-          title: Text(iobject.getDisplayName(),
+          title: SelectableText(iobject.getDisplayName(),
               style: TextStyle(fontWeight: FontWeight.w500)),
-          subtitle: Text(iobject.getName()),
+          subtitle: SelectableText(iobject.getName()),
           trailing: this.showStatus(iobject),
           leading: Container(
             width: 50.0,
@@ -242,7 +242,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
                   iobject.getStateText(),
                   maxLines: 1,
                 ),
-                Text(
+                SelectableText(
                   "${iobject.getStateSince()}",
                   style: TextStyle(
                       fontWeight: FontWeight.w300,
@@ -268,7 +268,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
 
     desc.add(
         ListTile(
-          title: Text("${services.length} Services (${servicesOk.length} Ok, ${servicesWarning.length} Warning, ${servicesCritical.length} Critical, ${servicesUnknown.length} Unkown)"),
+          title: SelectableText("${services.length} Services (${servicesOk.length} Ok, ${servicesWarning.length} Warning, ${servicesCritical.length} Critical, ${servicesUnknown.length} Unkown)"),
         )
     );
     desc.add(Divider(
@@ -361,8 +361,8 @@ class IcingaCheckListTileState extends State<IcingaCheckListTile> {
     }
 
     return ListTile(
-      title: Text(widget.iobject.getData(widget.iobject.outputField)),
-      subtitle: (widget.iobject.getData('next_update') == "") ? Text(widget.iobject.getData('check_command')) : Text(this.getNextCheck()),
+      title: SelectableText(widget.iobject.getData(widget.iobject.outputField)),
+      subtitle: (widget.iobject.getData('next_update') == "") ? SelectableText(widget.iobject.getData('check_command')) : SelectableText(this.getNextCheck()),
     );
   }
 }
