@@ -4,7 +4,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
-import 'package:kikke/storage/unsupported.dart' if (dart.library.io) "package:kikke/storage/app_secure.dart" if (dart.library.js) "package:kikke/storage/web.dart";
+import 'package:kikke/storage/unsupported.dart' if (dart.library.io) "package:kikke/storage/app.dart" if (dart.library.js) "package:kikke/storage/web.dart";
 
 import 'instancecontroller.dart';
 
@@ -12,7 +12,7 @@ class AppSettings {
   InstanceSettings instances;
   ThemeMode themeMode;
 
-  final storage = new Storage();
+  final storage = StorageProvider.getStorage();
 
   static const String field_instances = 'instances';
   static const String field_thememode = 'thememode';

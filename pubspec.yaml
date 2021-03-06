@@ -23,18 +23,18 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  connectivity: ^2.0.0
+  connectivity: ^3.0.2
   dio: ^3.0.0
-  shared_preferences: <1.0.0
+  shared_preferences: ^2.0.3
   validate: ^1.7.0
-  get_it: ^5.0.6
+  get_it: ^6.0.0
   queries: ^0.1.14
   intl: ^0.17.0-nullsafety.2
-  timeago: ^2.0.29
+  timeago: ^3.0.1
   auto_size_text: ^2.1.0
-  flutter_secure_storage: <4.0.0
-  uuid: ^2.2.2
-  provider: ^4.3.3
+  flutter_secure_storage: ^4.0.0
+  uuid: ^3.0.1
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

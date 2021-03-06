@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class Storage {
+import 'storage_interface.dart';
+
+class Storage implements StorageInterface {
   final storage = new FlutterSecureStorage();
 
   Future<String> read({@required String key}) async {

@@ -1,11 +1,7 @@
-import 'package:flutter/widgets.dart';
+import 'storage_interface.dart';
 
-class Storage {
-  Future<String> read({@required String key}) async {
-    throw UnsupportedError("Platform not supported");
-  }
-
-  Future<void> write({@required String key, @required String value}) async {
+class StorageProvider {
+  static StorageInterface getStorage() {
     throw UnsupportedError("Platform not supported");
   }
 }
