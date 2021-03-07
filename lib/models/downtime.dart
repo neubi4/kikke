@@ -39,7 +39,7 @@ class Downtime with IcingaObject {
   }
 
   String getAllNames() {
-    return "${this.getData('name')}";
+    return "${this.getDisplayName()}";
   }
 
   Icon getIcon() {
