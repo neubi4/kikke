@@ -17,16 +17,35 @@ class AppHomePage extends StatelessWidget {
                 title: Text("Problems"),
               ),
               body: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: IcingaObjectListView(controller: getIt.get<ServiceController>()),
-                    ),
-                    Expanded(
-                      child: IcingaObjectListView(controller: getIt.get<HostController>()),
-                    ),
-                  ],
+                child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            ListTile(title: Text("Services")),
+                            Expanded(
+                              child: IcingaObjectListView(controller: getIt.get<ServiceController>()),
+                            ),
+                          ],
+                        ),
+                      ),
+                      VerticalDivider(
+                        width: 0.0,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            ListTile(title: Text("Hosts")),
+                            Expanded(
+                              child: IcingaObjectListView(controller: getIt.get<HostController>()),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               drawer: DrawerMenu(),
