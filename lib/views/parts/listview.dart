@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kikke/controller/downtimescontroller.dart';
 import 'package:kikke/controller/icingacontroller.dart';
-import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/views/parts/list.dart';

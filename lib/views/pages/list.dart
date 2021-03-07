@@ -140,7 +140,7 @@ class AppListPageState extends State<AppListPage> {
   @override
   Widget build(BuildContext context) {
     if (this.appBarText == null) {
-      this.appBarText = Text(widget.title);
+      this.appBarText = Text("${widget.title}");
     }
 
     return  new Scaffold(

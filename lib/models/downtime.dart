@@ -75,4 +75,9 @@ class Downtime with IcingaObject {
 
     return "${start} until ${end}, set by ${this.getRawData('author_name')} comment: ${this.getRawData('comment')}";
   }
+
+
+  String getWebUrl() {
+    return "${this.instance.getUrl()}monitoring/downtime/show?downtime_id=${this.getData('id')}";
+  }
 }

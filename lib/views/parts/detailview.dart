@@ -16,6 +16,7 @@ import 'package:kikke/screens/dialog_ack.dart';
 import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/views/parts/list.dart';
 import 'package:queries/collections.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class IcingaDetailView extends StatefulWidget {
   const IcingaDetailView({
@@ -152,6 +153,14 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
             ListTile(
               title: SelectableText("${iobject.getStateSinceDate()}, ${iobject.getDateFieldSince(iobject.lastStateChangeField)}"),
               subtitle: Text('Last state Change'),
+            ),
+            Divider(height: 0.0,),
+            ListTile(
+              title: Text('Open in Webinterface'),
+              leading: Icon(Icons.open_in_new),
+              onTap: () async {
+                launch(iobject.getWebUrl());
+              },
             ),
             if (iobject.getData('acknowledged') == "0" && iobject.getState() != 0)
               Divider(

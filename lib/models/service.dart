@@ -36,4 +36,8 @@ class Service with IcingaObject {
     }
     return this.getData('description');
   }
+
+  String getWebUrl() {
+    return "${this.instance.getUrl()}monitoring/service/show?host=${this.host.getName()}&service=${this.getName()}";
+  }
 }

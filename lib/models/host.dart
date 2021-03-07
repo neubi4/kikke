@@ -42,4 +42,8 @@ class Host with IcingaObject {
     }
     return "${this.name}";
   }
+
+  String getWebUrl() {
+    return "${this.instance.getUrl()}monitoring/host/show?host=${this.getName()}";
+  }
 }

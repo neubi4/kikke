@@ -165,4 +165,6 @@ abstract class IcingaObject {
   String getInstanceName() {
     return this.instance.name;
   }
+
+  String getWebUrl() {}
 }
