@@ -57,7 +57,7 @@ class ListRow extends StatelessWidget {
   }
 
   Widget getSubTitle() {
-    return Text(this.iobject.getData(this.iobject.outputField));
+    return Text(this.iobject.getData(this.iobject.outputField), maxLines: 2,);
   }
 
   Widget showStatus() {

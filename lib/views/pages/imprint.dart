@@ -14,7 +14,7 @@ class ImprintPage extends StatelessWidget {
           alignment: Alignment.topLeft,
           child: Column(
             children: <Widget>[
-              Text("Martin Neubert\n"
+              SelectableText("Martin Neubert\n"
                   "Ludwig-Hartmann-Straße 8\n"
                   "01277 Dresden\n"
                   "\n"
