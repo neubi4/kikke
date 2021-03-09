@@ -179,7 +179,7 @@ class PerfData {
                     ),
                   ),
                   actions: <Widget>[
-                    FlatButton(
+                    TextButton(
                       child: Text("Ok"),
                       onPressed: () {
                         Navigator.of(context).pop();

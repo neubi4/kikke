@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
@@ -12,6 +14,7 @@ class IcingaInstance {
   String url;
   String username;
   String password;
+  String proxy;
 
   Map<String, Service> services = new Map();
   Map<String, Host> hosts = new Map();
@@ -26,17 +29,29 @@ class IcingaInstance {
 
   Dio request;
 
-  IcingaInstance(String name, String url, String username, String password) {
+  IcingaInstance(String name, String url, String username, String password, String proxy) {
     this.name = name;
     this.url = url;
     this.username = username;
     this.password = password;
+    this.proxy = proxy;
 
     this.request = Dio();
     this.request.options.headers = this.getDefaultHeaders();
     this.request.options.responseType = ResponseType.plain;
     this.request.options.sendTimeout = 3000;
     this.request.options.receiveTimeout = 60000;
+
+    (this.request.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.findProxy = (uri) {
+        if(this.proxy != '') {
+          Uri uri = Uri.parse(this.proxy);
+          return "PROXY ${uri.host}:${uri.port}";
+        }
+        return 'DIRECT';
+      };
+    };
   }
 
   String getAuthData() {

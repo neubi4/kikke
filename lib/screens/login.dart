@@ -44,7 +44,7 @@ class LoginData {
               title: Text('Error'),
               content: Text(error.toString()),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text("Ok"),
                   onPressed: () {
                     Navigator.of(context).pop();

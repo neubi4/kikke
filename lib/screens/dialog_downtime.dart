@@ -134,13 +134,13 @@ class DowntimeDialog {
                   ),
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: Text("Cancel"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text("Schedule Downtime"),
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {

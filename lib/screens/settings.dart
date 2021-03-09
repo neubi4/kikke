@@ -16,6 +16,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   AppSettings settings;
+  String proxy;
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @protected
   @mustCallSuper
@@ -108,49 +110,139 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               Card(
-                child: Column(
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(
-                        "Settings",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                child: Form(
+                  key: this._formKey,
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text(
+                          "Settings",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 0.0,
-                    ),
-                    ListTile(
-                      title: Text("Dark Mode"),
-                      trailing: DropdownButton(
-                        value: this.settings.themeMode,
-                        items: [
-                          DropdownMenuItem(
-                            child: Text("System"),
-                            value: ThemeMode.system,
-                          ),
-                          DropdownMenuItem(
-                            child: Text("Dark"),
-                            value: ThemeMode.dark,
-                          ),
-                          DropdownMenuItem(
-                            child: Text("Light"),
-                            value: ThemeMode.light,
-                          ),
-                        ],
-                        onChanged: (value) {
-                          appState.updateTheme(value);
-                          setState(() {
-                            this.settings.saveThemeMode(value);
-                          });
-                        },
+                      Divider(
+                        height: 0.0,
                       ),
-                    ),
-                    Divider(
-                      height: 0.0,
-                    ),
-                  ],
+                      ListTile(
+                        leading: Text("Dark Mode"),
+                        title: DropdownButton(
+                          value: this.settings.themeMode,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text("System"),
+                              value: ThemeMode.system,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("Dark"),
+                              value: ThemeMode.dark,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("Light"),
+                              value: ThemeMode.light,
+                            ),
+                          ],
+                          onChanged: (value) {
+                            appState.updateTheme(value);
+                            setState(() {
+                              this.settings.saveThemeMode(value);
+                            });
+                          },
+                        ),
+                      ),
+                      Divider(
+                        height: 0.0,
+                      ),
+                      ListTile(
+                        leading: Text("HTTP Proxy"),
+                        title: Container(
+                          width: 100,
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              hintText: 'http://proxy:8080',
+                              labelText: 'HTTP Proxy',
+                            ),
+                            initialValue: this.settings.proxy,
+                            validator: (value) {
+                              if(value == '') {
+                                return null;
+                              }
+
+                              try {
+                                Uri uri = Uri.parse(value);
+                                if(uri.host == '') {
+                                  return 'URL is missing a host';
+                                }
+                                if(uri.port == 0) {
+                                  return 'URL is missing a port';
+                                }
+                              } on FormatException catch (e) {
+                                return 'Proxy is not an uri';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              this.proxy = value;
+                            },
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        height: 0.0,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if(this._formKey.currentState.validate()) {
+                                this._formKey.currentState.save();
+
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (BuildContext context) {
+                                      return SimpleDialog(
+                                        title: Text("Saving"),
+                                        children: <Widget>[
+                                          Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              CircularProgressIndicator(),
+                                            ],
+                                          )
+                                        ],
+                                      );
+                                    });
+
+                                await this.settings.saveProxy(this.proxy);
+                                Navigator.of(context).pop();
+
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Saving"),
+                                      actions: [
+                                        TextButton(onPressed: () {
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        }, child: Text('Ok'))
+                                      ],
+                                      content: Text("Settings Saved"),
+                                    );
+                                  }
+                                );
+                              }
+                            },
+                            child: Text("Save")
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

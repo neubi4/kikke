@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/service_locator.dart';
@@ -11,11 +13,13 @@ import 'instancecontroller.dart';
 class AppSettings {
   InstanceSettings instances;
   ThemeMode themeMode;
+  String proxy;
 
   final storage = StorageProvider.getStorage();
 
   static const String field_instances = 'instances';
   static const String field_thememode = 'thememode';
+  static const String field_proxy = 'proxy';
 
   Future loadDataFromProvider() async {
     String jsonString = await storage.read(key: AppSettings.field_instances);
@@ -27,6 +31,8 @@ class AppSettings {
 
     String themeModeString = await storage.read(key: AppSettings.field_thememode);
     this.themeMode = this.getThemeMode(themeModeString);
+
+    this.proxy = await storage.read(key: AppSettings.field_proxy);
   }
 
   ThemeMode getThemeMode(String themeModeString) {
@@ -50,6 +56,17 @@ class AppSettings {
     this.themeMode = themeMode;
     String themeModeString = this.getThemeModeString(themeMode);
     await storage.write(key: AppSettings.field_thememode, value: themeModeString);
+  }
+
+  String getProxy() {
+    return this.proxy;
+  }
+
+  Future saveProxy(String proxy) async {
+    this.proxy = proxy;
+    await storage.write(key: AppSettings.field_proxy, value: proxy);
+
+    await this.save();
   }
 
   Future saveData(String id, String name, String url, String username, String password) async {
@@ -110,7 +127,19 @@ class AppSettings {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
+    dio.Dio d = dio.Dio();
+    (d.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.findProxy = (uri) {
+        if(this.proxy != '') {
+          Uri uri = Uri.parse(this.proxy);
+          return "PROXY ${uri.host}:${uri.port}";
+        }
+        return 'DIRECT';
+      };
+    };
+
+    final dio.Response response = await d.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
       headers: headers,
       responseType: dio.ResponseType.plain,
       sendTimeout: 3000,

@@ -4,6 +4,7 @@ import 'package:kikke/models/instancesettings.dart';
 
 class InstanceController {
   List<IcingaInstance> instances = [];
+  AppSettings settings;
 
   void addInstance(IcingaInstance instance) {
     this.instances.add(instance);
@@ -14,6 +15,7 @@ class InstanceController {
   }
 
   InstanceController.fromSettings(AppSettings settings) {
+    this.settings = settings;
     this.loadFromInstances(settings.instances.instances);
   }
 
@@ -26,6 +28,7 @@ class InstanceController {
         settings.url,
         settings.username,
         settings.password,
+        this.settings.getProxy(),
       ));
     });
   }

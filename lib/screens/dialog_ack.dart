@@ -197,13 +197,13 @@ class AckDialog {
                   ),
                 ),
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: Text("Cancel"),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                   ),
-                  FlatButton(
+                  TextButton(
                     child: Text("Acknowledge"),
                     onPressed: () async {
                       if (_formKey.currentState.validate()) {
