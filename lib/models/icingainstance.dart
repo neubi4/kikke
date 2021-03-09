@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'package:dio/dio.dart' as dio;
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
-import '../exceptions.dart';
 import 'downtime.dart';
 import 'host.dart';
 
@@ -26,7 +24,20 @@ class IcingaInstance {
   DateTime lastUpdateHosts = new DateTime(1970);
   DateTime lastUpdateDowntimes = new DateTime(1970);
 
-  IcingaInstance(this.name, this.url, this.username, this.password);
+  Dio request;
+
+  IcingaInstance(String name, String url, String username, String password) {
+    this.name = name;
+    this.url = url;
+    this.username = username;
+    this.password = password;
+
+    this.request = Dio();
+    this.request.options.headers = this.getDefaultHeaders();
+    this.request.options.responseType = ResponseType.plain;
+    this.request.options.sendTimeout = 3000;
+    this.request.options.receiveTimeout = 60000;
+  }
 
   String getAuthData() {
     return base64Encode(utf8.encode("${this.username}:${this.password}"));
@@ -52,11 +63,8 @@ class IcingaInstance {
     headers['Authorization'] = "Basic $auth";
     headers['Accept'] = "application/json";
 
-    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
+    final Response response = await this.request.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: Options(
       headers: headers,
-      responseType: dio.ResponseType.plain,
-      sendTimeout: 3000,
-      receiveTimeout: 60000,
     ));
 
     if (response.statusCode == 401) {
@@ -77,18 +85,12 @@ class IcingaInstance {
 
   Future fetchServices() async {
     this.lastUpdateServices = DateTime.now();
-    final headers = this.getDefaultHeaders();
 
     print("${this.name} fetching services");
 
     String icingaUrl = this.getUrl();
 
-    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/services?format=json&limit=10000', options: dio.Options(
-      headers: headers,
-      responseType: dio.ResponseType.plain,
-      sendTimeout: 3000,
-      receiveTimeout: 60000,
-    ));
+    final Response response = await this.request.get('${icingaUrl}monitoring/list/services?format=json&limit=10000');
 
     if (response.statusCode == 200) {
       var jsonData = (json.decode(response.data) as List);
@@ -114,7 +116,6 @@ class IcingaInstance {
   }
 
   Future removeAcknowledge(IcingaObject iobject) async {
-    final headers = this.getDefaultHeaders();
     String icingaUrl = this.getUrl();
 
     String url = "";
@@ -137,12 +138,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
-        headers: headers,
-        responseType: dio.ResponseType.plain,
-        sendTimeout: 3000,
-        receiveTimeout: 60000,
-      ));
+      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -162,7 +158,6 @@ class IcingaInstance {
   }
 
   Future acknowledge(IcingaObject iobject, String comment, {bool persistent = false, bool expire = false, bool sticky = false, bool notify = false, DateTime expireTime}) async {
-    final headers = this.getDefaultHeaders();
     String icingaUrl = this.getUrl();
 
     String url = "";
@@ -191,12 +186,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
-        headers: headers,
-        responseType: dio.ResponseType.plain,
-        sendTimeout: 3000,
-        receiveTimeout: 60000,
-      ));
+      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -216,7 +206,6 @@ class IcingaInstance {
   }
 
   Future scheduleDowmtime(IcingaObject iobject, String comment, DateTime start, DateTime end, {String type = "fixed"}) async {
-    final headers = this.getDefaultHeaders();
     String icingaUrl = this.getUrl();
 
     String url = "";
@@ -242,12 +231,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final dio.Response response = await dio.Dio().post('${icingaUrl}${url}', data: formData, options: dio.Options(
-        headers: headers,
-        responseType: dio.ResponseType.plain,
-        sendTimeout: 3000,
-        receiveTimeout: 60000,
-      ));
+      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -269,18 +253,12 @@ class IcingaInstance {
   Future fetchHosts() async {
     this.lastUpdateHosts = DateTime.now();
 
-    final headers = this.getDefaultHeaders();
 
     print("${this.name} fetching hosts");
 
     String icingaUrl = this.getUrl();
 
-    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/hosts?limit=10000&format=json', options: dio.Options(
-      headers: headers,
-      responseType: dio.ResponseType.plain,
-      sendTimeout: 3000,
-      receiveTimeout: 60000,
-    ));
+    final Response response = await this.request.get('${icingaUrl}monitoring/list/hosts?limit=10000&format=json');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.data);
@@ -312,18 +290,11 @@ class IcingaInstance {
   Future fetchDowntimes() async {
     this.lastUpdateDowntimes = DateTime.now();
 
-    final headers = this.getDefaultHeaders();
-
     print("${this.name} fetching downtimes");
 
     String icingaUrl = this.getUrl();
 
-    final dio.Response response = await dio.Dio().get('${icingaUrl}monitoring/list/downtimes?limit=10000&format=json', options: dio.Options(
-      headers: headers,
-      responseType: dio.ResponseType.plain,
-      sendTimeout: 3000,
-      receiveTimeout: 60000,
-    ));
+    final Response response = await this.request.get('${icingaUrl}monitoring/list/downtimes?limit=10000&format=json');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.data);
