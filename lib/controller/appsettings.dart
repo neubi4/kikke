@@ -33,6 +33,9 @@ class AppSettings {
     this.themeMode = this.getThemeMode(themeModeString);
 
     this.proxy = await storage.read(key: AppSettings.field_proxy);
+    if(this.proxy == null) {
+      this.proxy = '';
+    }
   }
 
   ThemeMode getThemeMode(String themeModeString) {
