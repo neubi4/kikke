@@ -42,7 +42,7 @@ class LoginData {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text(error.toString()),
+              content: SelectableText(error.toString()),
               actions: <Widget>[
                 TextButton(
                   child: Text("Ok"),

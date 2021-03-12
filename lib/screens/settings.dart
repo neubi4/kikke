@@ -43,13 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         onTap: () {
           Navigator.pushNamed(context, '/settings/account', arguments: setting).then((value) {
-            if (this.settings.instances.instances.length < 2) {
-              Navigator.popAndPushNamed(context, '/');
-            } else {
-              setState(() {
-
-              });
-            }
+            setState(() {});
           });
         },
       ),
@@ -229,6 +223,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         TextButton(onPressed: () {
                                           Navigator.of(context).pop();
                                           Navigator.of(context).pop();
+
+                                          Navigator.pushReplacementNamed(context, '/');
                                         }, child: Text('Ok'))
                                       ],
                                       content: Text("Settings Saved"),

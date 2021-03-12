@@ -94,8 +94,12 @@ abstract class IcingaObject {
     return this.icons[this.getState()];
   }
 
-  Color getBorderColor() {
-    return this.borderColors[this.getState()];
+  Color getBorderColor([int state]) {
+    if(state == null) {
+      state = this.getState();
+    }
+
+    return this.borderColors[state];
   }
 
   Color getBackgroundColor(BuildContext context, [int state]) {

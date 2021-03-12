@@ -76,7 +76,7 @@ class DowntimeDialog {
                     child: Column(
                       children: [
                         if (error != "")
-                          Text(error, style: TextStyle(color: Colors.red),),
+                          SelectableText(error, style: TextStyle(color: Colors.red),),
                         if (iobjects.length > 1)
                           Align(child: Text(DowntimeDialog.getObjectNames(iobjects),), alignment: Alignment.topLeft,),
                         TextFormField(

@@ -20,6 +20,8 @@ class PerfDataController {
     if(this.rawPerfData == '') {
       return;
     }
+    this.rawPerfData = this.rawPerfData.replaceAll("'", "");
+    this.rawPerfData = this.rawPerfData.replaceAll("  ", " ");
     List<String> splitted = this.rawPerfData.split(' ');
     splitted.forEach((element) {
       this.perfData.add(PerfData(iobject, element));

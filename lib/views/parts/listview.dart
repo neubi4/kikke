@@ -145,7 +145,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
                 color: Colors.red,
                 size: 50,
               ),
-              Text("${snapshot.error}"),
+              SelectableText("${snapshot.error}"),
             ],
           );
         }

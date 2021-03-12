@@ -97,7 +97,7 @@ class PerfData {
       this.warn,
     ];
 
-    if(this.warn.isInverted) {
+    if(this.warn != null && this.warn.isInverted) {
       conditions = List<Range>.from(conditions.reversed);
     }
 
@@ -115,6 +115,9 @@ class PerfData {
       switch (this.unit.toLowerCase()) {
         case "s":
           return DurationPerfDataFormatter(this);
+          break;
+        case "%":
+          return PercentagePerfDataFormatter(this);
           break;
         case "b":
         case "kb":
@@ -314,6 +317,9 @@ class PerfDataFormatter {
   PerfDataFormatter(this.perfData);
 
   Widget getTitle() {
+    if (perfData.max != null) {
+      return this.getProgessBarWidget(getDefaultText(perfData.value.toString(), perfData.unit));
+    }
     return Text(getDefaultText(perfData.value.toString(), perfData.unit));
   }
 
@@ -348,12 +354,21 @@ class PerfDataFormatter {
             value: this.perfData.value / this.perfData.max,
             minHeight: 10,
             valueColor: AlwaysStoppedAnimation<Color>(
-                this.perfData.iobject.getBorderColor()),
+                this.perfData.iobject.getBorderColor(this.perfData.getState())),
             backgroundColor: Colors.grey,
           ),
         ),
       ],
     );
+  }
+}
+
+class PercentagePerfDataFormatter extends PerfDataFormatter {
+  PercentagePerfDataFormatter(PerfData perfData) : super(perfData);
+
+  Widget getTitle() {
+    return this.getProgessBarWidget(
+        "${perfData.name} ${perfData.value.toString()}${perfData.unit}");
   }
 }
 
