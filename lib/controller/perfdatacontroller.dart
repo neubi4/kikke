@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/models/icingaobject.dart';
@@ -20,9 +22,13 @@ class PerfDataController {
     if(this.rawPerfData == '') {
       return;
     }
+
     this.rawPerfData = this.rawPerfData.replaceAll("'", "");
     this.rawPerfData = this.rawPerfData.replaceAll("  ", " ");
-    List<String> splitted = this.rawPerfData.split(' ');
+
+    PerfDataSet perfDataSet = PerfDataSet(this.rawPerfData);
+
+    List<String> splitted = perfDataSet.getPerfData();
     splitted.forEach((element) {
       this.perfData.add(PerfData(iobject, element));
     });
@@ -37,5 +43,40 @@ class PerfDataController {
     });
 
     return widgets;
+  }
+}
+
+class PerfDataSet {
+  String rawPerfData;
+  List<String> perfData = [];
+
+  int parserPos = 0;
+
+  PerfDataSet(this.rawPerfData);
+
+  List<String> getPerfData() {
+    this.rawPerfData = this.rawPerfData.trim();
+    if(this.rawPerfData == '') {
+      return [];
+    }
+
+    while(this.parserPos < this.rawPerfData.length) {
+      String label = this.readUntil('=');
+      this.parserPos++;
+      String data = this.readUntil(' ');
+
+      this.perfData.add("${label}=${data}");
+    }
+
+    return this.perfData;
+  }
+
+  String readUntil(String stopChar) {
+    int start = this.parserPos;
+    while(this.parserPos < this.rawPerfData.length && this.rawPerfData[this.parserPos] != stopChar) {
+      this.parserPos++;
+    }
+
+    return this.rawPerfData.substring(start, this.parserPos);
   }
 }

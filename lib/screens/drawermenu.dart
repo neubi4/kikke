@@ -27,42 +27,42 @@ class DrawerMenu extends StatelessWidget {
               title: Text('Problems'),
               selected: ModalRoute.of(context).settings.name == '/' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/');
+                Navigator.pushReplacementNamed(context, '/');
               },
             ),
             ListTile(
               title: Text('Hosts'),
               selected: ModalRoute.of(context).settings.name == '/lists/hosts' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/lists/hosts');
+                Navigator.pushReplacementNamed(context, '/lists/hosts');
               },
             ),
             ListTile(
               title: Text('Services'),
               selected: ModalRoute.of(context).settings.name == '/lists/services' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/lists/services');
+                Navigator.pushReplacementNamed(context, '/lists/services');
               },
             ),
             ListTile(
               title: Text('Downtimes'),
               selected: ModalRoute.of(context).settings.name == '/lists/downtimes' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/lists/downtimes');
+                Navigator.pushReplacementNamed(context, '/lists/downtimes');
               },
             ),
             ListTile(
               title: Text('Settings'),
               selected: ModalRoute.of(context).settings.name == '/settings' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/settings');
+                Navigator.pushReplacementNamed(context, '/settings');
               },
             ),
             ListTile(
               title: Text('Imprint'),
               selected: ModalRoute.of(context).settings.name == '/imprint' ,
               onTap: () {
-                Navigator.popAndPushNamed(context, '/imprint');
+                Navigator.pushReplacementNamed(context, '/imprint');
               },
             ),
           ],
