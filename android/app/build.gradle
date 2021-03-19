@@ -53,12 +53,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    productFlavors {
-        "default" {
-            applicationIdSuffix ".default"
-        }
-    }
-
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -67,14 +61,28 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+
         }
 
         debug {
             signingConfig signingConfigs.debug
             applicationIdSuffix ".debug"
+        }
+    }
+
+    productFlavors {
+        "default" {
+            applicationIdSuffix ".default"
+            resValue "string", "app_name", "Kikke"
+            signingConfig signingConfigs.release
+        }
+        "stage" {
+            applicationIdSuffix ".stage"
+            resValue "string", "app_name", "Kikke DEV"
+            signingConfig signingConfigs.debug
         }
     }
 }

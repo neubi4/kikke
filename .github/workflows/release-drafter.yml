@@ -1,0 +1,46 @@
+name: Release Drafter
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.release-drafter.outputs.name }}
+      upload_url: ${{ steps.release-drafter.outputs.upload_url }}
+    steps:
+      - uses: release-drafter/release-drafter@v5
+        with:
+          disable-autolabeler: true
+        id: release-drafter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  build-android:
+    needs: update_release_draft
+    name: Build Android App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - name: set key file
+        run: echo $ANDROID_KEY | base64 -d > android/key.jks
+        env:
+          ANDROID_KEY: ${{ secrets.ANDROID_KEY }}
+      - name: set key properties
+        run: echo $ANDROID_KEY_PROPERTIES | base64 -d > android/key.properties
+        env:
+          ANDROID_KEY_PROPERTIES: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+      - name: build app
+        run: "flutter build apk --split-per-abi --no-shrink --flavor default --build-name ${{ needs.update_release_draft.outputs.name }} --build-number ${{ github.run_number }}"
+      - name: Upload Assets to Release with a wildcard
+        uses: csexton/release-asset-action@v2
+        with:
+          pattern: "build/app/outputs/flutter-apk/app-*.apk"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ needs.update_release_draft.outputs.upload_url }}
