@@ -44,3 +44,25 @@ jobs:
           pattern: "build/app/outputs/flutter-apk/app-*.apk"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           release-url: ${{ needs.update_release_draft.outputs.upload_url }}
+  build-windows:
+    needs: update_release_draft
+    name: Build Windows App
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - name: build app
+        run: flutter build windows
+      - name: create package
+        run: "flutter pub run msix:create --version ${{ needs.update_release_draft.outputs.name }}.0"
+      - name: Upload Assets to Release with a wildcard
+        uses: csexton/release-asset-action@v2
+        with:
+          pattern: "build/windows/runner/Release/*.msix"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ needs.update_release_draft.outputs.upload_url }}
