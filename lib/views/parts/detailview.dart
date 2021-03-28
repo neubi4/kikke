@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:kikke/controller/downtimescontroller.dart';
+import 'package:kikke/controller/downtimecontroller.dart';
 import 'package:kikke/controller/hostcontroller.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/controller/perfdatacontroller.dart';
@@ -34,13 +34,17 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   InstanceController controller;
   ServiceController serviceController = getIt.get<ServiceController>();
   HostController hostController = getIt.get<HostController>();
-  DowntimesController downtimeController = getIt.get<DowntimesController>();
+  DowntimeController downtimeController = getIt.get<DowntimeController>();
 
   Collection<Downtime> downtimes;
 
   @override
   initState() {
     super.initState();
+    this.refreshDowntimes();
+  }
+
+  void refreshDowntimes() {
     downtimeController.getForObject(widget.iobject).then((value) {
       setState(() {
         this.downtimes = value;
@@ -53,8 +57,11 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     List<Future> futures = [];
     futures.add(this.serviceController.fetch());
     futures.add(this.hostController.fetch());
+    futures.add(this.downtimeController.fetch());
     await Future.wait(futures);
-    setState(() {});
+    setState(() {
+      this.refreshDowntimes();
+    });
   }
 
   List<Widget> getPerfData(BuildContext context, IcingaObject iobject) {
@@ -120,6 +127,13 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
         l.add(
           ListTile(
             title: Text("Downtime ${downtime.getDescription(context)}"),
+            trailing: IconButton(
+              icon: Icon(Icons.cancel),
+              onPressed: () async {
+                await DowntimeDialog.showRemoveDialog(context, setState, [downtime]);
+                await this._refresh();
+              },
+            ),
           ),
         );
       });
@@ -174,8 +188,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
                   AckDialog.show(context, setState, [iobject], callback: _refresh);
                 },
               ),
-            /* Currently not working, post to remove ack only reschedules check
-            if (iobject.getData('acknowledged') == "1" && iobject.getState() != 0)
+            // Currently not working, post to remove ack only reschedules check
+            /*if (iobject.getData('acknowledged') == "1" && iobject.getState() != 0)
               ListTile(
                 title: Text("Remove Acknowledgement"),
                 leading: Icon(Icons.check),
@@ -190,7 +204,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               title: Text("Schedule Downtime"),
               leading: Icon(Icons.access_time),
               onTap: () async {
-                DowntimeDialog.show(context, setState, [iobject], callback: _refresh);
+                await DowntimeDialog.show(context, setState, [iobject], callback: _refresh);
+                await this._refresh();
               },
             ),
             ...getDowntimes(context, iobject),

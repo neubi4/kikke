@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kikke/controller/downtimecontroller.dart';
 import 'package:kikke/controller/icingacontroller.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/screens/dialog_ack.dart';
@@ -101,29 +102,69 @@ class AppListPageState extends State<AppListPage> {
     });
   }
 
+  void reset() {
+    setState(() {
+      this.selectMode = false;
+      this.selected.clear();
+    });
+  }
+
   Widget bottomNavBar(BuildContext context) {
+    if (this.widget.controller is !DowntimeController) {
+      return BottomAppBar(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text("Acknowledge on ${this.selected.length} ${this.widget.controller.getType()}s",),
+              leading: Icon(Icons.check),
+              onTap: () {
+                AckDialog.show(context, setState, this.selected.toList());
+              },
+            ),
+            Divider(height: 0.0,),
+            ListTile(
+              title: Text("Set Downtime on ${this.selected.length} ${this.widget.controller.getType()}s",),
+              leading: Icon(Icons.access_time),
+              onTap: () {
+                DowntimeDialog.show(context, setState, this.selected.toList());
+              },
+            ),
+            Divider(height: 0.0,),
+            ListTile(
+              title: Text("Deselect ${this.selected.length} ${this.widget.controller.getType()}s",),
+              leading: Icon(Icons.close),
+              onTap: () {
+                setState(() {
+                  this.selectMode = false;
+                  this.selected.clear();
+                });
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
     return BottomAppBar(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text("Acknowledge on ${this.selected.length} ${this.widget.controller.getType()}s",),
-            leading: Icon(Icons.check),
-            onTap: () {
-              AckDialog.show(context, setState, this.selected.toList());
-            },
-          ),
-          Divider(height: 0.0,),
-          ListTile(
-            title: Text("Set Downtime on ${this.selected.length}  ${this.widget.controller.getType()}s",),
+            title: Text("Delete ${this.selected.length} ${this.widget.controller.getType()}s",),
             leading: Icon(Icons.access_time),
-            onTap: () {
-              DowntimeDialog.show(context, setState, this.selected.toList());
+            onTap: () async {
+              await DowntimeDialog.showRemoveDialog(context, setState, this.selected.toList());
+              await widget.controller.fetch();
+              setState(() {
+                this.selectMode = false;
+                this.selected.clear();
+              });
             },
           ),
           Divider(height: 0.0,),
           ListTile(
-            title: Text("Deselect ${this.selected.length}  ${this.widget.controller.getType()}s",),
+            title: Text("Deselect ${this.selected.length} ${this.widget.controller.getType()}s",),
             leading: Icon(Icons.close),
             onTap: () {
               setState(() {
@@ -146,7 +187,7 @@ class AppListPageState extends State<AppListPage> {
     return  new Scaffold(
       appBar: this.buildAppBar(),
       body: new Center(
-          child: IcingaObjectListView(controller: widget.controller, listAll: true, search: this.searchText, selectMode: this.selectMode, selected: this.selected, longClicked: _handleLongClick,)
+          child: IcingaObjectListView(controller: widget.controller, listAll: true, search: this.searchText, selectMode: this.selectMode, selected: this.selected, longClicked: _handleLongClick, reset: reset,)
       ),
       drawer: DrawerMenu(),
       bottomNavigationBar: this.selectMode ? bottomNavBar(context) : null,

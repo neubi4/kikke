@@ -120,10 +120,6 @@ class ListRowNoHostname extends ListRow {
 class ListRowDowntime extends ListRow {
   ListRowDowntime({Key key, IcingaObject iobject, ValueChanged<IcingaObject> clicked, ValueChanged<IcingaObject> longClicked, bool selected}): super(key: key, iobject: iobject, clicked: clicked, longClicked: longClicked, selected: selected);
 
-  void onLongPress() {
-    return null;
-  }
-
   Widget getSubTitle() {
     IcingaObject i = iobject;
     if(i is Downtime) {

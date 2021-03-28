@@ -14,6 +14,7 @@ class IcingaObjectListView extends StatefulWidget {
     this.selectMode = false,
     this.selected,
     this.longClicked,
+    this.reset,
   }) : super(key: key);
 
   final IcingaObjectController controller;
@@ -22,6 +23,7 @@ class IcingaObjectListView extends StatefulWidget {
   final bool selectMode;
   final Collection<IcingaObject> selected;
   final ValueChanged<IcingaObject> longClicked;
+  final reset;
 
   @override
   createState() => new IcingaObjectListViewState();
@@ -31,7 +33,9 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
   Future<void> _refresh() async {
     print('refreshing...');
     await widget.controller.fetch();
-    setState(() {});
+    setState(() {
+      widget.reset();
+    });
   }
 
   void _handleClick(IcingaObject iobject) async {

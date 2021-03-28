@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kikke/app_state.dart';
-import 'package:kikke/controller/downtimescontroller.dart';
+import 'package:kikke/controller/downtimecontroller.dart';
 import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/screens/settings.dart';
 import 'package:kikke/time/timeago.dart';
@@ -36,13 +36,13 @@ void main() async {
 
   ServiceController serviceController = new ServiceController(controller: controller);
   HostController hostController = new HostController(controller: controller);
-  DowntimesController downtimesController = new DowntimesController(controller: controller);
+  DowntimeController downtimesController = new DowntimeController(controller: controller);
 
   getIt.registerSingleton<InstanceController>(controller);
   getIt.registerSingleton<AppSettings>(appSettings);
   getIt.registerSingleton<ServiceController>(serviceController);
   getIt.registerSingleton<HostController>(hostController);
-  getIt.registerSingleton<DowntimesController>(downtimesController);
+  getIt.registerSingleton<DowntimeController>(downtimesController);
 
   timeago.setLocaleMessages('en', EnMessages());
   timeago.setLocaleMessages('de', DeMessages());
@@ -89,7 +89,7 @@ class KikkeApp extends StatelessWidget {
             '/': (context) => AppHomePage(),
             '/lists/hosts': (context) => AppListPage(controller: getIt.get<HostController>(), title: "Hosts",),
             '/lists/services': (context) => AppListPage(controller: getIt.get<ServiceController>(), title: "Services",),
-            '/lists/downtimes': (context) => AppListPage(controller: getIt.get<DowntimesController>(), title: "Downtimes",),
+            '/lists/downtimes': (context) => AppListPage(controller: getIt.get<DowntimeController>(), title: "Downtimes",),
             '/detail': (context) => AppDetailPage(),
             '/detail/perfdata': (context) => AppDetailPerfdataPage(),
             '/settings': (context) => SettingsScreen(),
