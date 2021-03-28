@@ -24,7 +24,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   connectivity: ^3.0.2
-  dio: ^3.0.0
+  dio: ^4.0.0
   shared_preferences: ^2.0.3
   validate: ^1.7.0
   get_it: ^6.0.0
@@ -40,7 +40,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  msix: ^0.1.15
+  msix: ^1.0.3
 
 
 # For information on the generic Dart part of this file, see the
@@ -93,3 +93,6 @@ msix_config:
   icons_background_color: transparent
   architecture: x64
   capabilities: 'internetClient'
+  logo_path: 'images/logo.png'
+  start_menu_icon_path: 'images/logo.png'
+  tile_icon_path: 'images/logo.png'

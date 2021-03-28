@@ -152,7 +152,7 @@ class AppSettings {
     if (response.statusCode == 401) {
       throw Exception('Status Code 401 Unauthorized!');
     } else if (response.statusCode != 200) {
-      throw Exception('Failed to load, ${response.statusCode} ${response.request.method} ${response.request.uri}');
+      throw Exception('Failed to load, ${response.statusCode} ${response.requestOptions.method} ${response.requestOptions.uri}');
     }
   }
 }
