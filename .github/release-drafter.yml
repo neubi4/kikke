@@ -1,18 +1,6 @@
 template: |
-  ## Whats Changed
+  ## Whats Changed in $RESOLVED_VERSION
 
   $CHANGES
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
-
-version-resolver:
-  major:
-    labels:
-      - 'major'
-  minor:
-    labels:
-      - 'minor'
-  patch:
-    labels:
-      - 'patch'
-  default: patch
+name-template: '$RESOLVED_VERSION'
+tag-template: '$RESOLVED_VERSION'
