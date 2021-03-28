@@ -130,6 +130,46 @@ class IcingaInstance {
     }
   }
 
+  Future removeDowntime(IcingaObject iobject) async {
+    String icingaUrl = this.getUrl();
+
+    String url = "monitoring/downtime/show?downtime_id=${iobject.getRawData('id')}";
+
+    print("${this.name} downtime ack ${url}");
+
+    Map<String, dynamic> mapData = {
+      "formUID": "IcingaModuleMonitoringFormsCommandObjectDeleteDowntimeCommandForm",
+      "btn_submit": "",
+      "downtime_id": iobject.getRawData('id'),
+      "downtime_name": iobject.getName(),
+    };
+
+    FormData formData = new FormData.fromMap(mapData);
+
+    String msg;
+
+    try {
+      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
+
+      var jsonData = json.decode(response.data);
+      print(jsonData);
+      if(jsonData['status'] == 'fail') {
+        throw Exception(response.data.toString());
+      }
+
+      await Future.delayed(Duration(seconds: 5));
+
+    } on DioError catch(e) {
+      try {
+        var jsonData = json.decode(e.response.data);
+        msg = jsonData['message'];
+      } on Exception catch(ee) {
+        throw Exception(e.response.data);
+      }
+      throw Exception(msg);
+    }
+  }
+
   Future removeAcknowledge(IcingaObject iobject) async {
     String icingaUrl = this.getUrl();
 
@@ -144,7 +184,7 @@ class IcingaInstance {
 
     Map<String, dynamic> mapData = {
       "formUID": "IcingaModuleMonitoringFormsCommandObjectRemoveAcknowledgementCommandForm",
-      "btn_submit": "Remove acknowledgement",
+      "btn_submit": "",
     };
 
     FormData formData = new FormData.fromMap(mapData);
@@ -254,6 +294,7 @@ class IcingaInstance {
         throw Exception(response.data.toString());
       }
 
+      await Future.delayed(Duration(seconds: 5));
     } on DioError catch(e) {
       try {
         var jsonData = json.decode(e.response.data);
@@ -314,15 +355,11 @@ class IcingaInstance {
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.data);
 
+      this.downtimes.clear();
       jsonData.forEach((item) {
-        if (this.downtimes.containsKey(item['name'])) {
-          this.downtimes[item['name']].update(item);
-        } else {
-          this.downtimes[item['name']] = Downtime.fromJson(item, this);
-        }
-
-        this.fetchedAllDowntimes = true;
+        this.downtimes[item['name']] = Downtime.fromJson(item, this);
       });
+      this.fetchedAllDowntimes = true;
     } else {
       // If that call was not successful, throw an error.
       throw Exception('Failed to load downtimes, ${response.requestOptions.method} ${response.requestOptions.uri} ${response.statusCode} ${response.data}');
@@ -341,21 +378,21 @@ class IcingaInstance {
 
   Future<void> checkUpdateHosts() async {
     Duration diff = DateTime.now().difference(this.lastUpdateHosts);
-    if (!this.fetchedAllHosts | (diff.inSeconds > 60)) {
+    if (!this.fetchedAllHosts || (diff.inSeconds > 60)) {
       await this.fetchHosts();
     }
   }
 
   Future<void> checkUpdateServices() async {
     Duration diff = DateTime.now().difference(this.lastUpdateServices);
-    if (!this.fetchedAllServices | (diff.inSeconds > 60)) {
+    if (!this.fetchedAllServices || (diff.inSeconds > 60)) {
       await this.fetchServices();
     }
   }
 
   Future<void> checkUpdateDowntimes() async {
     Duration diff = DateTime.now().difference(this.lastUpdateDowntimes);
-    if (!this.fetchedAllDowntimes | (diff.inSeconds > 60)) {
+    if (!this.fetchedAllDowntimes || (diff.inSeconds > 60)) {
       await this.fetchDowntimes();
     }
   }
