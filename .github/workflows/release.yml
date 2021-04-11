@@ -1,0 +1,69 @@
+---
+name: Build App for Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-android:
+    name: Build Android App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - name: set key file
+        run: echo $ANDROID_KEY | base64 -d > android/key.jks
+        env:
+          ANDROID_KEY: ${{ secrets.ANDROID_KEY }}
+      - name: set key properties
+        run: echo $ANDROID_KEY_PROPERTIES | base64 -d > android/key.properties
+        env:
+          ANDROID_KEY_PROPERTIES: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+      - name: build app
+        run: "flutter build apk --split-per-abi --no-shrink --flavor default --build-name ${{ github.event.release.tag_name }} --build-number ${{ github.run_number }}"
+      - name: Upload Assets to Release with a wildcard
+        uses: csexton/release-asset-action@v2
+        with:
+          pattern: "build/app/outputs/flutter-apk/app-*.apk"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ github.event.release.upload_url }}
+  build-windows:
+    name: Build Windows App
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+      - run: flutter config --enable-windows-desktop
+      - run: flutter pub get
+      - name: build app
+        run: flutter build windows
+      - name: copy windows dlls
+        run: |
+          copy C:\Windows\System32\msvcp140.dll build\windows\runner\Release\msvcp140.dll
+          copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\vcruntime140.dll
+          copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\vcruntime140_1.dll
+      - name: pack zip
+        run: |
+          powershell Compress-Archive -Path build\windows\runner\Release\* -DestinationPath kikke-windows-zip.zip
+      - name: create package
+        run: "flutter pub run msix:create --version ${{ github.event.release.tag_name }}.0"
+      - name: Upload Assets to Release with a wildcard
+        uses: csexton/release-asset-action@v2
+        with:
+          pattern: "build/windows/runner/Release/*.msix"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ github.event.release.upload_url }}
+      - name: Upload Assets to Release with a wildcard
+        uses: csexton/release-asset-action@v2
+        with:
+          pattern: "kikke-windows-zip.zip"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          release-url: ${{ github.event.release.upload_url }}
