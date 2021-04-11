@@ -36,6 +36,14 @@ jobs:
       - run: flutter pub get
       - name: build app
         run: flutter build windows
+      - name: copy windows dlls
+        run: |
+          copy C:\Windows\System32\msvcp140.dll build\windows\runner\Release\msvcp140.dll
+          copy C:\Windows\System32\vcruntime140.dll build\windows\runner\Release\vcruntime140.dll
+          copy C:\Windows\System32\vcruntime140_1.dll build\windows\runner\Release\vcruntime140_1.dll
+      - name: pack zip
+        run: |
+          powershell Compress-Archive -Path build\windows\runner\Release\* -DestinationPath kikke-windows-zip.zip
       - name: create package
         run: flutter pub run msix:create
       - name: upload artifact
@@ -43,3 +51,8 @@ jobs:
         with:
           name: kikke-windows
           path: build/windows/runner/Release/*.msix
+      - name: upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: kikke-windows-zip
+          path: kikke-windows-zip.zip
