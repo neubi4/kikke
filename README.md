@@ -1,16 +1,34 @@
-# mobilemon
+# <img src=".github/screenshots/logo.png?raw=true" width="100"> Kikke
 
-A new Flutter project.
+Kikke is an Client App for [Icingaweb2](https://icinga.com/docs/icinga-web-2/latest/).
+
+Kikke is written in [Flutter](https://flutter.dev/) and currently build for Android and Windows.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Download Kikke and try it yourself.
 
-A few resources to get you started if this is your first Flutter project:
+Stable: [![GitHub release (latest by date)](https://img.shields.io/github/v/release/neubi4/kikke)](https://github.com/neubi4/kikke/releases/latest)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Pre Release: [![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/neubi4/kikke?include_prereleases)](https://github.com/neubi4/kikke/releases)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Screenshots
+
+<p float="left">
+<a href=".github/screenshots/overview.png" target="_blank"><img src=".github/screenshots/overview.png?raw=true" width="200"></a>
+<a href=".github/screenshots/host_detail.png" target="_blank"><img src=".github/screenshots/host_detail.png?raw=true" width="200"></a>
+<a href=".github/screenshots/service_detail.png" target="_blank"><img src=".github/screenshots/service_detail.png?raw=true" width="200"></a>
+<a href=".github/screenshots/service_list.png" target="_blank"><img src=".github/screenshots/service_list.png?raw=true" width="200"></a>
+</p>
+
+## App Store
+
+Currently there is no Version in the Google Play Store, this is planned for a future release.
+
+## License
+
+GPLv3
+
+## Author Information
+
+* Martin Neubert
