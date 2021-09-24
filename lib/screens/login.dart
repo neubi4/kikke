@@ -147,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   keyboardType: TextInputType.text,
                   decoration: new InputDecoration(
                       hintText: 'Instance Name',
-                      labelText: 'Enter your Instnance Name'),
+                      labelText: 'Enter your instance-name'),
                   initialValue: this._instanceSetting.name,
                   validator: this._validateName,
                   onSaved: (String value) {
@@ -169,7 +169,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 new TextFormField(
                   keyboardType: TextInputType.text,
                   decoration: new InputDecoration(
-                      hintText: 'Username', labelText: 'Enter your Username'),
+                      hintText: 'Username', labelText: 'Enter your username'),
                   initialValue: this._instanceSetting.username,
                   validator: this._validateName,
                   onSaved: (String value) {
