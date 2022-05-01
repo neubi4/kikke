@@ -74,8 +74,20 @@ abstract class IcingaObject {
     return "";
   }
 
+  int getRawDataAsInt(String key) {
+    var data = this.getRawData(key);
+    if(data == "") {
+      return 0;
+    }
+    return int.parse(data);
+  }
+
   String getData(String key) {
     return this.getRawData("${this.fieldPrefix}_$key");
+  }
+
+  int getDataAsInt(String key) {
+    return int.parse(this.getData(key));
   }
 
   String getName() {
@@ -151,6 +163,9 @@ abstract class IcingaObject {
   }
 
   String getDateFieldSince(String field) {
+    if(this.getData(field) == null) {
+      return "";
+    }
     DateTime date = DateTime.fromMillisecondsSinceEpoch(double.parse(this.getData(field)).toInt() * 1000);
 
     return timeago.format(date, allowFromNow: true);
@@ -161,6 +176,9 @@ abstract class IcingaObject {
   }
 
   String getStateSinceDate() {
+    if(this.getData(this.lastStateChangeField) == null) {
+      return "";
+    }
     DateTime date = DateTime.fromMillisecondsSinceEpoch(int.parse(this.getData(this.lastStateChangeField)) * 1000);
 
     return "${DateFormat.yMMMd().format(date)} ${DateFormat.Hms().format(date)}";

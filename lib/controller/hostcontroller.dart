@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:kikke/controller/icingacontroller.dart';
 
 import 'package:kikke/models/host.dart';
-import 'package:queries/collections.dart';
 
 import 'instancecontroller.dart';
 
@@ -33,41 +32,32 @@ class HostController implements IcingaObjectController {
     await Future.wait(futures);
   }
 
-  Future<Collection<Host>> getAll() async {
+  Future<List<Host>> getAll() async {
     await this.checkUpdate();
 
-    List<Host> l = new List();
+    List<Host> l = [];
     this.controller.instances.forEach((instance) {
       instance.hosts.forEach((name, hosts) => l.add(hosts));
     });
 
-    var m = new Collection<Host>(l);
-    return m
-        .orderBy((host) => int.parse(host.getData('state')) * -1)
-        .thenBy((host) => host.getName().toLowerCase())
-        .thenBy((host) => host.getData('last_state_change'))
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Host>> getAllWithProblems() async {
+  Future<List<Host>> getAllWithProblems() async {
     await this.checkUpdate();
 
-    List<Host> l = new List();
+    List<Host> l = [];
     this.controller.instances.forEach((instance) {
       instance.hosts.forEach((name, hosts) => l.add(hosts));
     });
 
-    var m = new Collection<Host>(l);
-    return m
-        .where((host) => host.getData('state') != "0")
-        .orderBy((host) => int.parse(host.getData('handled')) * 1)
-        .thenBy((host) => host.getWeight() * -1)
-        .thenBy(
-            (host) => int.parse(host.getData('last_state_change')) * -1)
-        .toCollection();
+    l = l.where((host) => host.getData('state') != "0").toList();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Host>> getAllSearch(String search) async {
+  Future<List<Host>> getAllSearch(String search) async {
     search = search.toLowerCase();
     List<Host> l = new List();
     this.controller.instances.forEach((instance) {
@@ -78,10 +68,7 @@ class HostController implements IcingaObjectController {
       });
     });
 
-    var m = new Collection<Host>(l);
-    return m
-        .orderBy((service) => int.parse(service.getData('state')) * -1)
-        .thenBy((service) => service.getData('last_state_change'))
-        .toCollection();
+    l.sort();
+    return l;
   }
 }

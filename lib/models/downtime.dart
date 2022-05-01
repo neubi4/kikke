@@ -4,7 +4,7 @@ import 'package:kikke/models/icingaobject.dart';
 
 import 'icingainstance.dart';
 
-class Downtime with IcingaObject {
+class Downtime with IcingaObject implements Comparable {
   String name;
   String address;
   Map<String, dynamic> data;
@@ -76,8 +76,17 @@ class Downtime with IcingaObject {
     return "${start} until ${end}, set by ${this.getRawData('author_name')} comment: ${this.getRawData('comment')}";
   }
 
-
   String getWebUrl() {
     return "${this.instance.getUrl()}monitoring/downtime/show?downtime_id=${this.getData('id')}";
+  }
+
+  @override
+  int compareTo(other) {
+    int cmp = this.getRawDataAsInt('start').compareTo(other.getRawDataAsInt('start'));
+    if(cmp != 0) {
+      return cmp;
+    }
+
+    return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
   }
 }
