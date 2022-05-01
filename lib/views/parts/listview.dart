@@ -104,7 +104,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
     //DowntimesController a = getIt.get<DowntimesController>();
     //a.getAllSync();
 
-    return FutureBuilder<Collection<IcingaObject>>(
+    return FutureBuilder<List<IcingaObject>>(
       future: this.getListFuture(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {

@@ -1,7 +1,7 @@
 import 'package:kikke/models/icingainstance.dart';
 import 'package:kikke/models/icingaobject.dart';
 
-class Host with IcingaObject {
+class Host with IcingaObject implements Comparable {
   String name;
   String address;
   Map<String, dynamic> data;
@@ -45,5 +45,20 @@ class Host with IcingaObject {
 
   String getWebUrl() {
     return "${this.instance.getUrl()}monitoring/host/show?host=${this.getName()}";
+  }
+
+  @override
+  int compareTo(other) {
+    int cmp = (this.getDataAsInt('state') * -1).compareTo((other.getDataAsInt('state') * -1));
+    if(cmp != 0) {
+      return cmp;
+    }
+
+    cmp = this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
+    if(cmp != 0) {
+      return cmp;
+    }
+
+    return (this.getDataAsInt('last_state_change') * -1).compareTo((other.getDataAsInt('last_state_change') * -1));
   }
 }

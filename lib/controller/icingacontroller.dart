@@ -3,8 +3,8 @@ import 'package:queries/collections.dart';
 
 abstract class IcingaObjectController {
   String getType();
-  Future<Collection<IcingaObject>> getAll();
-  Future<Collection<IcingaObject>> getAllSearch(String search);
-  Future<Collection<IcingaObject>> getAllWithProblems();
+  Future<List<IcingaObject>> getAll();
+  Future<List<IcingaObject>> getAllSearch(String search);
+  Future<List<IcingaObject>> getAllWithProblems();
   Future fetch();
 }

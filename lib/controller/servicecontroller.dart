@@ -3,8 +3,6 @@ import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/models/host.dart';
 import 'package:kikke/models/service.dart';
 
-import 'package:queries/collections.dart';
-
 class ServiceController implements IcingaObjectController {
   InstanceController controller;
 
@@ -32,7 +30,7 @@ class ServiceController implements IcingaObjectController {
     await Future.wait(futures);
   }
 
-  Future<Collection<Service>> getServicesForHost(Host host) async {
+  Future<List<Service>> getServicesForHost(Host host) async {
     await this.checkUpdate();
 
     List<Service> l = new List();
@@ -40,11 +38,12 @@ class ServiceController implements IcingaObjectController {
       instance.services.forEach((name, service) => l.add(service));
     });
 
-    var m = new Collection<Service>(l);
-    return m.where((service) => service.host == host);
+    l = l.where((service) => service.host == host).toList();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Service>> getAll() async {
+  Future<List<Service>> getAll() async {
     await this.checkUpdate();
 
     List<Service> l = new List();
@@ -52,15 +51,11 @@ class ServiceController implements IcingaObjectController {
       instance.services.forEach((name, service) => l.add(service));
     });
 
-    var m = new Collection<Service>(l);
-    return m
-        .orderBy((service) => int.parse(service.getData('state')) * -1)
-        .thenBy((service) => int.parse(service.getData('handled')) * 1)
-        .thenBy((service) => service.getData('last_state_change'))
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Service>> getAllWithProblems() async {
+  Future<List<Service>> getAllWithProblems() async {
     await this.checkUpdate();
 
     List<Service> l = new List();
@@ -68,41 +63,30 @@ class ServiceController implements IcingaObjectController {
       instance.services.forEach((name, service) => l.add(service));
     });
 
-    var m = new Collection<Service>(l);
-    return m
-        .where((service) => service.getData('state') != "0")
-        .orderBy((service) => int.parse(service.getData('handled')) * 1)
-        .thenBy((service) => service.getWeight() * -1)
-        .thenBy(
-            (service) => int.parse(service.getData('last_state_change')) * -1)
-        .toCollection();
+    l = l.where((host) => host.getData('state') != "0").toList();
+    l.sort();
+    return l;
   }
 
-  Collection<Service> getAllForHost(Host host) {
+  List<Service> getAllForHost(Host host) {
     List<Service> l = new List();
     this.controller.instances.forEach((instance) {
       instance.services.forEach(
           (name, service) => service.host == host ? l.add(service) : false);
     });
 
-    var m = new Collection<Service>(l);
-    return m
-        .orderBy((service) => service.getWeight() * -1)
-        .thenBy((service) => int.parse(service.getData('acknowledged')) * 1)
-        .thenBy(
-            (service) => int.parse(service.getData('last_state_change')) * -1)
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Collection<Service> getWithStatus(Host host, String state) {
-    var m = this.getAllForHost(host);
+  List<Service> getWithStatus(Host host, String state) {
+    var l = this.getAllForHost(host);
 
-    return m
-        .where((service) => service.getData('state') == state)
-        .toCollection();
+    l = l.where((host) => host.getData('state') == state).toList();
+    return l;
   }
 
-  Future<Collection<Service>> getAllSearch(String search) async {
+  Future<List<Service>> getAllSearch(String search) async {
     search = search.toLowerCase();
     List<Service> l = new List();
     this.controller.instances.forEach((instance) {
@@ -114,10 +98,7 @@ class ServiceController implements IcingaObjectController {
       });
     });
 
-    var m = new Collection<Service>(l);
-    return m
-        .orderBy((service) => int.parse(service.getData('state')) * -1)
-        .thenBy((service) => service.getData('last_state_change'))
-        .toCollection();
+    l.sort();
+    return l;
   }
 }
