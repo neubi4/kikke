@@ -188,13 +188,15 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 new Container(
                   width: screenSize.width,
-                  child: new RaisedButton(
+                  child: new ElevatedButton(
                     child: new Text(
                       'Login',
                       style: new TextStyle(color: Colors.white),
                     ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                    ),
                     onPressed: this.submit,
-                    color: Colors.blue,
                   ),
                   margin: new EdgeInsets.only(top: 20.0),
                 )
