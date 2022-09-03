@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:kikke/controller/appsettings.dart';
@@ -7,7 +8,6 @@ import 'package:kikke/screens/drawermenu.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
-import 'drawermenu.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   AppSettings settings;
-  String proxy;
+  String proxy = "";
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   @protected
@@ -150,7 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       ListTile(
                         leading: Text("HTTP Proxy"),
-                        title: Container(
+                        title: kIsWeb ? Text("Set in Browser Settings") : Container(
                           width: 100,
                           child: TextFormField(
                             decoration: InputDecoration(

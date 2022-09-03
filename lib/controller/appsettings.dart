@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
@@ -131,16 +132,20 @@ class AppSettings {
     headers['Accept'] = "application/json";
 
     dio.Dio d = dio.Dio();
-    (d.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.findProxy = (uri) {
-        if(this.proxy != '') {
-          Uri uri = Uri.parse(this.proxy);
-          return "PROXY ${uri.host}:${uri.port}";
-        }
-        return 'DIRECT';
+
+    if(!kIsWeb) {
+      (d.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (HttpClient client) {
+        client.findProxy = (uri) {
+          if (this.proxy != '') {
+            Uri uri = Uri.parse(this.proxy);
+            return "PROXY ${uri.host}:${uri.port}";
+          }
+          return 'DIRECT';
+        };
+        return client;
       };
-    };
+    }
 
     final dio.Response response = await d.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(
       headers: headers,

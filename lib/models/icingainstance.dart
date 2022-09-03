@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
@@ -42,16 +43,20 @@ class IcingaInstance {
     this.request.options.sendTimeout = 3000;
     this.request.options.receiveTimeout = 60000;
 
-    (this.request.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.findProxy = (uri) {
-        if(this.proxy != '') {
-          Uri uri = Uri.parse(this.proxy);
-          return "PROXY ${uri.host}:${uri.port}";
-        }
-        return 'DIRECT';
+    if (!kIsWeb) {
+      (this.request.httpClientAdapter as DefaultHttpClientAdapter)
+          .onHttpClientCreate =
+          (HttpClient client) {
+        client.findProxy = (uri) {
+          if (this.proxy != '') {
+            Uri uri = Uri.parse(this.proxy);
+            return "PROXY ${uri.host}:${uri.port}";
+          }
+          return 'DIRECT';
+        };
+        return client;
       };
-    };
+    }
   }
 
   String getAuthData() {
