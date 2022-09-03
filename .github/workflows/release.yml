@@ -13,9 +13,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
-          channel: beta
+          channel: stable
       - name: set key file
         run: echo $ANDROID_KEY | base64 -d > android/key.jks
         env:
@@ -38,9 +38,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
-          channel: beta
+          channel: stable
       - run: flutter config --enable-windows-desktop
       - run: flutter pub get
       - name: build app
