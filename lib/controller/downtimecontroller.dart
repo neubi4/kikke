@@ -5,8 +5,6 @@ import 'package:kikke/models/host.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
 
-import 'package:queries/collections.dart';
-
 import 'instancecontroller.dart';
 
 class DowntimeController implements IcingaObjectController {
@@ -36,26 +34,23 @@ class DowntimeController implements IcingaObjectController {
     await Future.wait(futures);
   }
 
-  Future<Collection<Downtime>> getAll() async {
+  Future<List<Downtime>> getAll() async {
     await this.checkUpdate();
 
     return this.getAllSync();
   }
 
-  Collection<Downtime> getAllSync() {
+  List<Downtime> getAllSync() {
     List<Downtime> l = new List();
     this.controller.instances.forEach((instance) {
       instance.downtimes.forEach((name, downtime) => l.add(downtime));
     });
 
-    var m = new Collection<Downtime>(l);
-    return m
-        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
-        .thenBy((downtime) => downtime.getName().toLowerCase())
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Downtime>> getAllSearch(String search) async {
+  Future<List<Downtime>> getAllSearch(String search) async {
     search = search.toLowerCase();
     List<Downtime> l = new List();
     this.controller.instances.forEach((instance) {
@@ -66,14 +61,11 @@ class DowntimeController implements IcingaObjectController {
       });
     });
 
-    var m = new Collection<Downtime>(l);
-    return m
-        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
-        .thenBy((downtime) => downtime.getName().toLowerCase())
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<Downtime>> getForObject(IcingaObject iobject) async {
+  Future<List<Downtime>> getForObject(IcingaObject iobject) async {
     await this.checkUpdate();
 
     List<Downtime> l = new List();
@@ -91,14 +83,11 @@ class DowntimeController implements IcingaObjectController {
       });
     });
 
-    var m = new Collection<Downtime>(l);
-    return m
-        .orderBy((downtime) => int.parse(downtime.getRawData('start')))
-        .thenBy((downtime) => downtime.getName().toLowerCase())
-        .toCollection();
+    l.sort();
+    return l;
   }
 
-  Future<Collection<IcingaObject>> getAllWithProblems() {
+  Future<List<IcingaObject>> getAllWithProblems() {
     // TODO: implement getAllWithProblems
     throw UnimplementedError();
   }

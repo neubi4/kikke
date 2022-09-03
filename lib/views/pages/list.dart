@@ -6,7 +6,6 @@ import 'package:kikke/screens/dialog_ack.dart';
 import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/screens/drawermenu.dart';
 import 'package:kikke/views/parts/listview.dart';
-import 'package:queries/collections.dart';
 
 class AppListPage extends StatefulWidget {
   const AppListPage({
@@ -26,7 +25,7 @@ class AppListPageState extends State<AppListPage> {
   final TextEditingController _filter = new TextEditingController();
   String searchText = "";
   bool selectMode = false;
-  Collection<IcingaObject> selected = Collection<IcingaObject>();
+  List<IcingaObject> selected = List<IcingaObject>();
   Icon searchIcon = Icon(Icons.search, color: Colors.white);
   Widget searchField;
   Widget appBarText;

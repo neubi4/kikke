@@ -3,7 +3,6 @@ import 'package:kikke/controller/icingacontroller.dart';
 import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/views/parts/list.dart';
-import 'package:queries/collections.dart';
 
 class IcingaObjectListView extends StatefulWidget {
   const IcingaObjectListView({
@@ -21,7 +20,7 @@ class IcingaObjectListView extends StatefulWidget {
   final bool listAll;
   final String search;
   final bool selectMode;
-  final Collection<IcingaObject> selected;
+  final List<IcingaObject> selected;
   final ValueChanged<IcingaObject> longClicked;
   final reset;
 
@@ -104,7 +103,7 @@ class IcingaObjectListViewState extends State<IcingaObjectListView> {
     //DowntimesController a = getIt.get<DowntimesController>();
     //a.getAllSync();
 
-    return FutureBuilder<Collection<IcingaObject>>(
+    return FutureBuilder<List<IcingaObject>>(
       future: this.getListFuture(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {

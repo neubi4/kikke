@@ -15,7 +15,6 @@ import 'package:kikke/models/service.dart';
 import 'package:kikke/screens/dialog_ack.dart';
 import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/views/parts/list.dart';
-import 'package:queries/collections.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class IcingaDetailView extends StatefulWidget {
@@ -36,7 +35,7 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   HostController hostController = getIt.get<HostController>();
   DowntimeController downtimeController = getIt.get<DowntimeController>();
 
-  Collection<Downtime> downtimes;
+  List<Downtime> downtimes;
 
   @override
   initState() {
@@ -284,11 +283,11 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   List<Widget> getServices(BuildContext context, Host host) {
     List<Widget> desc = List();
     List<Widget> l = List();
-    Collection<Service> services = this.serviceController.getAllForHost(host);
-    Collection<Service> servicesOk = this.serviceController.getWithStatus(host, "0");
-    Collection<Service> servicesWarning = this.serviceController.getWithStatus(host, "1");
-    Collection<Service> servicesCritical = this.serviceController.getWithStatus(host, "2");
-    Collection<Service> servicesUnknown = this.serviceController.getWithStatus(host, "3");
+    List<Service> services = this.serviceController.getAllForHost(host);
+    List<Service> servicesOk = this.serviceController.getWithStatus(host, "0");
+    List<Service> servicesWarning = this.serviceController.getWithStatus(host, "1");
+    List<Service> servicesCritical = this.serviceController.getWithStatus(host, "2");
+    List<Service> servicesUnknown = this.serviceController.getWithStatus(host, "3");
 
     desc.add(
         ListTile(
