@@ -188,7 +188,9 @@ abstract class IcingaObject {
     return this.instance.name;
   }
 
-  String getWebUrl() {}
+  String getWebUrl() {
+    return "";
+  }
 
   int compare(List<int> compares) {
     compares.forEach((compare) {

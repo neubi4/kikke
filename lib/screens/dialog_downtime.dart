@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
@@ -44,8 +43,6 @@ class DowntimeDialog {
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          bool isLoading = false;
-
           return StatefulBuilder(
               builder: (context, setState) {
                 return AlertDialog(

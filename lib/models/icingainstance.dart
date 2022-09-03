@@ -51,6 +51,7 @@ class IcingaInstance {
         }
         return 'DIRECT';
       };
+      return client;
     };
   }
 
@@ -135,7 +136,7 @@ class IcingaInstance {
 
     String url = "monitoring/downtime/show?downtime_id=${iobject.getRawData('id')}";
 
-    print("${this.name} downtime ack ${url}");
+    print("${this.name} downtime ack $url");
 
     Map<String, dynamic> mapData = {
       "formUID": "IcingaModuleMonitoringFormsCommandObjectDeleteDowntimeCommandForm",
@@ -149,7 +150,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
+      final Response response = await this.request.post('$icingaUrl$url', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -163,7 +164,7 @@ class IcingaInstance {
       try {
         var jsonData = json.decode(e.response.data);
         msg = jsonData['message'];
-      } on Exception catch(ee) {
+      } on Exception {
         throw Exception(e.response.data);
       }
       throw Exception(msg);
@@ -180,7 +181,7 @@ class IcingaInstance {
       url = "monitoring/host/show?host=${iobject.getName()}";
     }
 
-    print("${this.name} remove ack ${url}");
+    print("${this.name} remove ack $url");
 
     Map<String, dynamic> mapData = {
       "formUID": "IcingaModuleMonitoringFormsCommandObjectRemoveAcknowledgementCommandForm",
@@ -193,7 +194,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
+      final Response response = await this.request.post('$icingaUrl$url', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -205,7 +206,7 @@ class IcingaInstance {
       try {
         var jsonData = json.decode(e.response.data);
         msg = jsonData['message'];
-      } on Exception catch(ee) {
+      } on Exception {
         throw Exception(e.response.data);
       }
       throw Exception(msg);
@@ -222,7 +223,7 @@ class IcingaInstance {
       url = "monitoring/host/acknowledge-problem?host=${iobject.getName()}";
     }
 
-    print("${this.name} ack ${url}");
+    print("${this.name} ack $url");
 
     Map<String, dynamic> mapData = {
       "comment": comment,
@@ -241,7 +242,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
+      final Response response = await this.request.post('$icingaUrl$url', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -253,7 +254,7 @@ class IcingaInstance {
       try {
         var jsonData = json.decode(e.response.data);
         msg = jsonData['message'];
-      } on Exception catch(ee) {
+      } on Exception {
         throw Exception(e.response.data);
       }
       throw Exception(msg);
@@ -270,7 +271,7 @@ class IcingaInstance {
       url = "monitoring/host/schedule-downtime?host=${iobject.getName()}";
     }
 
-    print("${this.name} ack ${url}");
+    print("${this.name} ack $url");
 
     Map<String, dynamic> mapData = {
       "comment": comment,
@@ -286,7 +287,7 @@ class IcingaInstance {
     String msg;
 
     try {
-      final Response response = await this.request.post('${icingaUrl}${url}', data: formData);
+      final Response response = await this.request.post('$icingaUrl$url', data: formData);
 
       var jsonData = json.decode(response.data);
       print(jsonData);
@@ -299,7 +300,7 @@ class IcingaInstance {
       try {
         var jsonData = json.decode(e.response.data);
         msg = jsonData['message'];
-      } on Exception catch(ee) {
+      } on Exception {
         throw Exception(e.response.data);
       }
       throw Exception(msg);

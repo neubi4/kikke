@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/models/icingaobject.dart';
 
@@ -213,7 +212,9 @@ abstract class Range {
   }
 
   void parse() {}
-  double getMax() {}
+  double getMax() {
+    return 0.0;
+  }
 
   bool isInRange(double value) {
     return false;

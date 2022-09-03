@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:kikke/controller/appsettings.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
@@ -7,7 +6,6 @@ import 'package:kikke/screens/drawermenu.dart';
 import 'package:provider/provider.dart';
 
 import '../app_state.dart';
-import 'drawermenu.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -171,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 if(uri.port == 0) {
                                   return 'URL is missing a port';
                                 }
-                              } on FormatException catch (e) {
+                              } on FormatException {
                                 return 'Proxy is not an uri';
                               }
                               return null;

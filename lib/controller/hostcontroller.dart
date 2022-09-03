@@ -59,7 +59,7 @@ class HostController implements IcingaObjectController {
 
   Future<List<Host>> getAllSearch(String search) async {
     search = search.toLowerCase();
-    List<Host> l = new List();
+    List<Host> l = [];
     this.controller.instances.forEach((instance) {
       instance.hosts.forEach((name, host) {
         if (host.getAllNames().toLowerCase().contains(search)) {

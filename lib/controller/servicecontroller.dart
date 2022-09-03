@@ -33,7 +33,7 @@ class ServiceController implements IcingaObjectController {
   Future<List<Service>> getServicesForHost(Host host) async {
     await this.checkUpdate();
 
-    List<Service> l = new List();
+    List<Service> l = [];
     this.controller.instances.forEach((instance) {
       instance.services.forEach((name, service) => l.add(service));
     });
@@ -46,7 +46,7 @@ class ServiceController implements IcingaObjectController {
   Future<List<Service>> getAll() async {
     await this.checkUpdate();
 
-    List<Service> l = new List();
+    List<Service> l = [];
     this.controller.instances.forEach((instance) {
       instance.services.forEach((name, service) => l.add(service));
     });
@@ -58,7 +58,7 @@ class ServiceController implements IcingaObjectController {
   Future<List<Service>> getAllWithProblems() async {
     await this.checkUpdate();
 
-    List<Service> l = new List();
+    List<Service> l = [];
     this.controller.instances.forEach((instance) {
       instance.services.forEach((name, service) => l.add(service));
     });
@@ -69,7 +69,7 @@ class ServiceController implements IcingaObjectController {
   }
 
   List<Service> getAllForHost(Host host) {
-    List<Service> l = new List();
+    List<Service> l = [];
     this.controller.instances.forEach((instance) {
       instance.services.forEach(
           (name, service) => service.host == host ? l.add(service) : false);
@@ -88,7 +88,7 @@ class ServiceController implements IcingaObjectController {
 
   Future<List<Service>> getAllSearch(String search) async {
     search = search.toLowerCase();
-    List<Service> l = new List();
+    List<Service> l = [];
     this.controller.instances.forEach((instance) {
       instance.services.forEach((name, service) {
         if (service.getAllNames().toLowerCase().contains(search) ||
