@@ -94,3 +94,4 @@ msix_config:
   logo_path: 'images/logo.png'
   start_menu_icon_path: 'images/logo.png'
   tile_icon_path: 'images/logo.png'
+  install_certificate: false
