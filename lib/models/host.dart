@@ -49,16 +49,12 @@ class Host with IcingaObject implements Comparable {
 
   @override
   int compareTo(other) {
-    int cmp = (this.getDataAsInt('state') * -1).compareTo((other.getDataAsInt('state') * -1));
-    if(cmp != 0) {
-      return cmp;
-    }
+    List<int> compares = [
+      (this.getDataAsInt('state') * -1).compareTo((other.getDataAsInt('state') * -1)),
+      this.getName().toLowerCase().compareTo(other.getName().toLowerCase()),
+      (this.getDataAsInt('last_state_change') * -1).compareTo((other.getDataAsInt('last_state_change') * -1))
+    ];
 
-    cmp = this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
-    if(cmp != 0) {
-      return cmp;
-    }
-
-    return (this.getDataAsInt('last_state_change') * -1).compareTo((other.getDataAsInt('last_state_change') * -1));
+    return this.compare(compares);
   }
 }

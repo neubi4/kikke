@@ -15,7 +15,6 @@ import 'package:kikke/models/service.dart';
 import 'package:kikke/screens/dialog_ack.dart';
 import 'package:kikke/screens/dialog_downtime.dart';
 import 'package:kikke/views/parts/list.dart';
-import 'package:queries/collections.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class IcingaDetailView extends StatefulWidget {

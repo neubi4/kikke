@@ -189,4 +189,14 @@ abstract class IcingaObject {
   }
 
   String getWebUrl() {}
+
+  int compare(List<int> compares) {
+    compares.forEach((compare) {
+      if(compare != 0) {
+        return compare;
+      }
+    });
+
+    return 0;
+  }
 }

@@ -43,21 +43,13 @@ class Service with IcingaObject implements Comparable {
 
   @override
   int compareTo(other) {
-    int cmp = (this.getDataAsInt('severity') * -1).compareTo(other.getDataAsInt('severity') * -1);
-    if(cmp != 0) {
-      return cmp;
-    }
+    List<int> compares = [
+      (this.getDataAsInt('severity') * -1).compareTo(other.getDataAsInt('severity') * -1),
+      (int.parse(this.getData('acknowledged'))).compareTo(int.parse(other.getData('acknowledged'))),
+      this.getName().toLowerCase().compareTo(other.getName().toLowerCase()),
+      (this.getDataAsInt('last_state_change') * -1).compareTo((other.getDataAsInt('last_state_change') * -1)),
+    ];
 
-    cmp = (int.parse(this.getData('acknowledged'))).compareTo(int.parse(other.getData('acknowledged')));
-    if(cmp != 0) {
-      return cmp;
-    }
-
-    cmp = this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
-    if(cmp != 0) {
-      return cmp;
-    }
-
-    return (this.getDataAsInt('last_state_change') * -1).compareTo((other.getDataAsInt('last_state_change') * -1));
+    return this.compare(compares);
   }
 }

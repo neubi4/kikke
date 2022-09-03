@@ -127,7 +127,7 @@ class DowntimeDialog {
                             Text("Start Time"),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0),
-                              child: RaisedButton(
+                              child: ElevatedButton(
                                 child: Text(DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(fromTime)),
                                 onPressed: () async {
                                   fromTime = await showDatePicker(context: context, initialDate: fromTime, firstDate: DateTime.now(), lastDate: DateTime(2030));
@@ -146,7 +146,7 @@ class DowntimeDialog {
                             Text("End Time"),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0),
-                              child: RaisedButton(
+                              child: ElevatedButton(
                                 child: Text(DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(toTime)),
                                 onPressed: () async {
                                   toTime = await showDatePicker(context: context, initialDate: toTime, firstDate: DateTime.now(), lastDate: DateTime(2030));

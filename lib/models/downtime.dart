@@ -82,11 +82,11 @@ class Downtime with IcingaObject implements Comparable {
 
   @override
   int compareTo(other) {
-    int cmp = this.getRawDataAsInt('start').compareTo(other.getRawDataAsInt('start'));
-    if(cmp != 0) {
-      return cmp;
-    }
+    List<int> compares = [
+      this.getRawDataAsInt('start').compareTo(other.getRawDataAsInt('start')),
+      this.getName().toLowerCase().compareTo(other.getName().toLowerCase()),
+    ];
 
-    return this.getName().toLowerCase().compareTo(other.getName().toLowerCase());
+    return this.compare(compares);
   }
 }
