@@ -140,6 +140,7 @@ class AppSettings {
         }
         return 'DIRECT';
       };
+      return client;
     };
 
     final dio.Response response = await d.get('${icingaUrl}monitoring/list/hosts?limit=1&format=json', options: dio.Options(

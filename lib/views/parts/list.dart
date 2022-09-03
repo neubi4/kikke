@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kikke/models/downtime.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/service.dart';
@@ -66,6 +65,8 @@ class ListRow extends StatelessWidget {
     } else if (this.iobject.getData('in_downtime') == "1") {
       return Icon(Icons.access_time, color: this.iobject.getIconColor(context, 'in_downtime'), size: 17.0);
     }
+
+    return null;
   }
 
   Widget showInstance() {
@@ -125,6 +126,8 @@ class ListRowDowntime extends ListRow {
     if(i is Downtime) {
       return Text(i.getDescription(this.context));
     }
+
+    return null;
   }
 
   Widget showInstance() {

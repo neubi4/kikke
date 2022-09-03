@@ -41,7 +41,7 @@ class DowntimeController implements IcingaObjectController {
   }
 
   List<Downtime> getAllSync() {
-    List<Downtime> l = new List();
+    List<Downtime> l = [];
     this.controller.instances.forEach((instance) {
       instance.downtimes.forEach((name, downtime) => l.add(downtime));
     });
@@ -52,7 +52,7 @@ class DowntimeController implements IcingaObjectController {
 
   Future<List<Downtime>> getAllSearch(String search) async {
     search = search.toLowerCase();
-    List<Downtime> l = new List();
+    List<Downtime> l = [];
     this.controller.instances.forEach((instance) {
       instance.downtimes.forEach((name, downtime) {
         if (downtime.getAllNames().toLowerCase().contains(search)) {
@@ -68,7 +68,7 @@ class DowntimeController implements IcingaObjectController {
   Future<List<Downtime>> getForObject(IcingaObject iobject) async {
     await this.checkUpdate();
 
-    List<Downtime> l = new List();
+    List<Downtime> l = [];
     this.controller.instances.forEach((instance) {
       instance.downtimes.forEach((name, downtime) {
         if(iobject is Host) {

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kikke/models/icingaobject.dart';
@@ -44,8 +43,6 @@ class AckDialog {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        bool isLoading = false;
-
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(

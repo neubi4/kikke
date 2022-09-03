@@ -73,7 +73,7 @@ class Downtime with IcingaObject implements Comparable {
     String start = DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(dateStart);
     String end = DateFormat.yMd(Localizations.localeOf(context).languageCode).add_jm().format(dateEnd);
 
-    return "${start} until ${end}, set by ${this.getRawData('author_name')} comment: ${this.getRawData('comment')}";
+    return "$start until $end, set by ${this.getRawData('author_name')} comment: ${this.getRawData('comment')}";
   }
 
   String getWebUrl() {

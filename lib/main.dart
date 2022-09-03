@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:kikke/app_state.dart';
 import 'package:kikke/controller/downtimecontroller.dart';
 import 'package:kikke/controller/instancecontroller.dart';
@@ -56,7 +55,9 @@ void main() async {
 }
 
 class KikkeApp extends StatelessWidget {
-  String initRoute;
+  final String initRoute;
+
+  final ThemeData theme = ThemeData();
 
   KikkeApp(this.initRoute);
 
@@ -78,9 +79,11 @@ class KikkeApp extends StatelessWidget {
           ],
           // Start the app with the "/" named route. In our case, the app will start
           // on the FirstScreen Widget
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            accentColor: Colors.lightBlueAccent,
+          darkTheme: theme.copyWith(
+            colorScheme: theme.colorScheme.copyWith(
+                brightness: Brightness.dark,
+                secondary: Colors.lightBlueAccent,
+              ),
           ),
           themeMode: appState.themeMode,
           initialRoute: initRoute,

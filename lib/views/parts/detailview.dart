@@ -172,7 +172,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
               title: Text('Open in Webinterface'),
               leading: Icon(Icons.open_in_new),
               onTap: () async {
-                launch(iobject.getWebUrl());
+                final Uri _url = Uri.parse(iobject.getWebUrl());
+                launchUrl(_url);
               },
             ),
             if (iobject.getData('acknowledged') == "0" && iobject.getState() != 0)
@@ -237,6 +238,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
     } else if (iobject.getData('in_downtime') == "1") {
       return Icon(Icons.access_time, color: Colors.black45, size: 17.0);
     }
+
+    return null;
   }
 
   Container icingaObjectHeaderListTile(IcingaObject iobject) {
@@ -281,8 +284,8 @@ class IcingaDetailViewState extends State<IcingaDetailView> {
   }
 
   List<Widget> getServices(BuildContext context, Host host) {
-    List<Widget> desc = List();
-    List<Widget> l = List();
+    List<Widget> desc = [];
+    List<Widget> l = [];
     List<Service> services = this.serviceController.getAllForHost(host);
     List<Service> servicesOk = this.serviceController.getWithStatus(host, "0");
     List<Service> servicesWarning = this.serviceController.getWithStatus(host, "1");

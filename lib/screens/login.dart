@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:kikke/controller/appsettings.dart';
-import 'package:kikke/controller/instancecontroller.dart';
 import 'package:kikke/controller/service_locator.dart';
 import 'package:kikke/models/instancesettings.dart';
 import 'package:uuid/uuid.dart';

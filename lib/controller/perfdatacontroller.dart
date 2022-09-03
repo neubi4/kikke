@@ -1,6 +1,3 @@
-import 'dart:collection';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kikke/models/icingaobject.dart';
 import 'package:kikke/models/perfdata.dart';
@@ -65,7 +62,7 @@ class PerfDataSet {
       this.parserPos++;
       String data = this.readUntil(' ');
 
-      this.perfData.add("${label}=${data}");
+      this.perfData.add("$label=$data");
     }
 
     return this.perfData;

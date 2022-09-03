@@ -25,7 +25,7 @@ class AppListPageState extends State<AppListPage> {
   final TextEditingController _filter = new TextEditingController();
   String searchText = "";
   bool selectMode = false;
-  List<IcingaObject> selected = List<IcingaObject>();
+  List<IcingaObject> selected = [];
   Icon searchIcon = Icon(Icons.search, color: Colors.white);
   Widget searchField;
   Widget appBarText;
